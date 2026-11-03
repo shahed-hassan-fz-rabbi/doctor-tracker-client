@@ -12,6 +12,7 @@ import { useMe } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/Toast';
 import { Input, Field } from '@/components/ui/Form';
 import Button from '@/components/ui/Button';
+import { safeNextPath } from '@/lib/navigation';
 
 const loginSchema = z.object({
   email: z.string().trim().min(1, 'Email is required').email('Enter a valid email'),
@@ -21,7 +22,7 @@ const loginSchema = z.object({
 function LoginContent() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get('next') || '/dashboard';
+  const next = safeNextPath(params.get('next'));
 
   const login = useLogin();
   const toast = useToast();
