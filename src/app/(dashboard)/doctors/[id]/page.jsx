@@ -23,7 +23,7 @@ import Button from '@/components/ui/Button';
 import Table, { TableSkeleton } from '@/components/ui/Table';
 import Pagination from '@/components/ui/Pagination';
 import EmptyState from '@/components/ui/EmptyState';
-import ConfirmDialog, { useToast } from '@/components/ui/Toast';
+import { ConfirmDialog, useToast } from '@/components/ui/Toast';
 import Modal from '@/components/ui/Modal';
 import { formatDate, initials } from '@/lib/utils';
 
@@ -80,7 +80,6 @@ export default function DoctorDetailsPage({ params }) {
   return (
     <div className="space-y-6">
       <Link
-        to
         href="/doctors"
         className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink"
       >
@@ -292,6 +291,9 @@ export default function DoctorDetailsPage({ params }) {
             });
             toast.success(`${removing.fullName} removed from the roster.`);
             setRemoving(null);
+            // refresh roster + doctor card immediately
+            patientsQuery.refetch();
+            doctorQuery.refetch();
           } catch (err) {
             toast.error(err?.message || 'Could not remove the patient.');
           }
@@ -318,29 +320,27 @@ function IconInfo({ icon: Icon, label, value, small = false }) {
 
 /** Inline "add patient" form used inside the doctor page modal. */
 function AddPatientInline({ doctor, onDone }) {
-  const { data: patientsData } = usePatients({ limit: 0, page: 1 });
-  const allPatients = patientsData?.data || [];
-  const [selectedPat, setSelectedPat] = useState('');
+  // server-side filter: only patients that currently have no doctor
+  const { data: unassignedQuery } = usePatients({ page: 1, limit: 100, doctorId: 'unassigned' });
+  const candidates = unassignedQuery?.data || [];
+
+  const [selectedId, setSelectedId] = useState('');
   const [pending, setPending] = useState(false);
   const toast = useToast();
-  const { patientsQuery } = { patientsQuery: null };
-
-  // "Add existing patient" allows linking an unassigned patient
-  const candidates = allPatients.filter((p) => !p.doctorId);
 
   async function addToRoster() {
-    if (!selectedPat) {
-      toast.error('Pick an existing unassigned patient first.');
+    if (!selectedId) {
+      toast.error('Pick an unassigned patient first.');
       return;
     }
     setPending(true);
     try {
       const { apiFetch } = await import('@/lib/api');
-      await apiFetch(`/patients/${selectedPat.id}`, {
+      await apiFetch(`/patients/${selectedId}`, {
         method: 'PATCH',
         body: { doctorId: doctor.id },
       });
-      toast.success(`${selectedPat.fullName} added to ${doctor.name}'s roster.`);
+      toast.success(`Patient added to ${doctor.name}'s roster.`);
       onDone();
     } catch (err) {
       toast.error(err?.message || 'Could not add the patient.');
@@ -353,11 +353,8 @@ function AddPatientInline({ doctor, onDone }) {
     <div className="space-y-4">
       <p className="text-sm text-ink-soft">Link an existing unassigned patient to {doctor.name}.</p>
       <select
-        value={selectedPat}
-        onChange={(e) => {
-          const opt = candidates.find((c) => (c.id || c._id) === e.target.value);
-          setSelectedPat(opt);
-        }}
+        value={selectedId}
+        onChange={(e) => setSelectedId(e.target.value)}
         className="h-10 w-full rounded-lg border border-line bg-white px-3 text-sm text-ink outline-none focus:border-lime focus:ring-2 focus:ring-lime/40"
         aria-label="Choose unassigned patient"
       >
@@ -377,3 +374,4 @@ function AddPatientInline({ doctor, onDone }) {
     </div>
   );
 }
+

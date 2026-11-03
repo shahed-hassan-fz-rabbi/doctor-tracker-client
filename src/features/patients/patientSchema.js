@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CONDITIONS, GENDERS } from './constants';
+import { CONDITIONS, GENDERS } from '../constants';
 
 export const patientFormSchema = z.object({
   fullName: z.string().trim().min(2, 'Full name is required').max(120, 'Name is too long'),

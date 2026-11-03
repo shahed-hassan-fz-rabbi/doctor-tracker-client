@@ -22,7 +22,6 @@ import Table, { TableSkeleton } from '@/components/ui/Table';
 import Pagination from '@/components/ui/Pagination';
 import EmptyState from '@/components/ui/EmptyState';
 import { ConfirmDialog, useToast } from '@/components/ui/Toast';
-import { useToast } from '@/components/ui/Toast';
 import { Input, Select, Field } from '@/components/ui/Form';
 import { formatDate } from '@/lib/utils';
 
@@ -245,9 +244,9 @@ export default function DoctorsPage() {
                     className="group border-b border-line last:border-0 hover:bg-ivory/60"
                   >
                     <td className="py-3.5 pr-4">
-                      <ILink href={`/doctors/${doc.id || doc._id}`} className="font-medium text-ink hover:text-forest hover:underline font-display">
+                      <Link href={`/doctors/${doc.id || doc._id}`} className="font-medium text-ink hover:text-forest hover:underline font-display">
                         {doc.name}
-                      </ILink>
+                      </Link>
                       <p className="text-xs text-ink-soft">{doc.email}</p>
                     </td>
                     <td className="pr-4 text-sm text-ink">{doc.specialization}</td>
@@ -259,12 +258,12 @@ export default function DoctorsPage() {
                     <td className="pr-4">
                       <div className="flex justify-end gap-1 opacity-60 transition group-hover:opacity-100">
                         <IconLink
-                          to={`/doctors/${doc.id || doc._id}`}
+                          href={`/doctors/${doc.id || doc._id}`}
                           icon={Eye}
                           label={`View ${doc.name}`}
                         />
                         <IconLink
-                          to={`/doctors/${doc.id || doc._id}/edit`}
+                          href={`/doctors/${doc.id || doc._id}/edit`}
                           icon={Pencil}
                           label={`Edit ${doc.name}`}
                         />
@@ -285,7 +284,7 @@ export default function DoctorsPage() {
             {/* Mobile cards */}
             <div className=" Divide-y divide-line md:hidden">
               {rows.map((doc) => (
-                <ILink
+                <Link
                   key={doc.id || doc._id}
                   href={`/doctors/${doc.id || doc._id}`}
                   className="block border-b border-line p-4 last:border-0 active:bg-ivory"
@@ -303,7 +302,7 @@ export default function DoctorsPage() {
                     <span>{formatDate(doc.createdAt)}</span>
                     <span className="text-ink-soft/70">View details →</span>
                   </div>
-                </ILink>
+                </Link>
               ))}
             </div>
 
@@ -329,12 +328,12 @@ export default function DoctorsPage() {
 
 function IconLink({ to, icon: Icon, label }) {
   return (
-    <ILink
+    <Link
       to={to}
       className="rounded-lg p-2 text-ink-soft transition hover:bg-ivory-dark hover:text-ink"
       aria-label={label}
     >
       <Icon className="h-4 w-4" />
-    </ILink>
+    </Link>
   );
 }
