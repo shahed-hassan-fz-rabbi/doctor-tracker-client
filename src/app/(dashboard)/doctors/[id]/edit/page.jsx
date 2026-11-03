@@ -1,16 +1,17 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { use } from 'react';
 import { useDoctor, useUpdateDoctor } from '@/hooks/useDoctors';
 import DoctorForm from '@/features/doctors/DoctorForm';
 import { Card, PageHeader } from '@/components/ui/Cards';
-import TableSkeleton from '@/components/ui/Table';
+import { TableSkeleton } from '@/components/ui/Table';
 import EmptyState from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
 import { Stethoscope } from 'lucide-react';
 
 export default function EditDoctorPage({ params }) {
-  const { id } = params;
+  const { id } = use(params);
   const router = useRouter();
   const { data, isLoading, isError, error } = useDoctor(id);
   const updateDoctor = useUpdateDoctor();

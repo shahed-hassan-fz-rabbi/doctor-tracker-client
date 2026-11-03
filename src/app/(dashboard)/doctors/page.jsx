@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Stethoscope,
   Plus,
@@ -98,9 +98,9 @@ export default function DoctorsPage() {
       />
 
       {/* Filter bar */}
-      <Card className="p-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
-          <div className="flex-1 lg:max-w-sm">
+      <Card className="p-4 sm:p-5">
+        <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+          <Field label="Search doctors" className="min-w-0 xl:col-span-2">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
               <Input
@@ -111,70 +111,71 @@ export default function DoctorsPage() {
                 aria-label="Search doctors"
               />
             </div>
-          </div>
+          </Field>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:flex-1">
-            <Field label="Specialization">
-              <Select
-                value={filters.specialization}
-                onChange={(e) => {
-                  setFilters((f) => ({ ...f, specialization: e.target.value }));
-                  setPage(1);
-                }}
-                aria-label="Filter by specialization"
-              >
-                <option value="">All</option>
-                {SPECIALIZATIONS.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </Select>
-            </Field>
+          <Field label="Specialization" className="min-w-0 xl:col-span-2">
+            <Select
+              value={filters.specialization}
+              onChange={(e) => {
+                setFilters((f) => ({ ...f, specialization: e.target.value }));
+                setPage(1);
+              }}
+              aria-label="Filter by specialization"
+            >
+              <option value="">All</option>
+              {SPECIALIZATIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
-            <Field label="From">
-              <Input
-                type="date"
-                value={filters.dateFrom}
-                onChange={(e) => {
-                  setFilters((f) => ({ ...f, dateFrom: e.target.value }));
-                  setPage(1);
-                }}
-                aria-label="Registered from"
-              />
-            </Field>
+          <Field label="From" className="min-w-0">
+            <Input
+              type="date"
+              value={filters.dateFrom}
+              className="w-full min-w-0"
+              onChange={(e) => {
+                setFilters((f) => ({ ...f, dateFrom: e.target.value }));
+                setPage(1);
+              }}
+              aria-label="Registered from"
+            />
+          </Field>
 
-            <Field label="To">
-              <Input
-                type="date"
-                value={filters.dateTo}
-                onChange={(e) => {
-                  setFilters((f) => ({ ...f, dateTo: e.target.value }));
-                  setPage(1);
-                }}
-                aria-label="Registered to"
-              />
-            </Field>
+          <Field label="To" className="min-w-0">
+            <Input
+              type="date"
+              value={filters.dateTo}
+              className="w-full min-w-0"
+              onChange={(e) => {
+                setFilters((f) => ({ ...f, dateTo: e.target.value }));
+                setPage(1);
+              }}
+              aria-label="Registered to"
+            />
+          </Field>
 
-            <Field label="Sort by">
-              <Select
-                value={`${filters.sortBy}:${filters.sortOrder}`}
-                onChange={(e) => {
-                  const [sortBy, sortOrder] = e.target.value.split(':');
-                  setFilters((f) => ({ ...f, sortBy, sortOrder }));
-                  setPage(1);
-                }}
-                aria-label="Sort doctors"
-              >
-                <option value="createdAt:desc">Newest first</option>
-                <option value="createdAt:asc">Oldest first</option>
-                <option value="name:asc">Name (A→Z)</option>
-                <option value="name:desc">Name (Z→A)</option>
-                <option value="specialization:asc">Specialization (A→Z)</option>
-                <option value="hospital:asc">Hospital (A→Z)</option>
-              </Select>
-            </Field>
-          </div>
+          <Field label="Sort by" className="min-w-0">
+            <Select
+              value={`${filters.sortBy}:${filters.sortOrder}`}
+              className="w-full min-w-0"
+              onChange={(e) => {
+                const [sortBy, sortOrder] = e.target.value.split(':');
+                setFilters((f) => ({ ...f, sortBy, sortOrder }));
+                setPage(1);
+              }}
+              aria-label="Sort doctors"
+            >
+              <option value="createdAt:desc">Newest first</option>
+              <option value="createdAt:asc">Oldest first</option>
+              <option value="name:asc">Name (A→Z)</option>
+              <option value="name:desc">Name (Z→A)</option>
+              <option value="specialization:asc">Specialization (A→Z)</option>
+              <option value="hospital:asc">Hospital (A→Z)</option>
+            </Select>
+          </Field>
 
           {hasFilters && (
             <button
@@ -183,7 +184,8 @@ export default function DoctorsPage() {
                 setSearchInput('');
                 setPage(1);
               }}
-              className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg border border-line bg-white px-3 text-sm text-ink-soft hover:bg-ivory cursor-pointer"
+              className="inline-flex h-10 w-fit items-center gap-1.5 self-end rounded-lg border border-line bg-white px-3 text-sm text-ink-soft transition hover:bg-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime/50 cursor-pointer"
+              aria-label="Clear doctor filters"
             >
               <X className="h-4 w-4" />
               Clear
@@ -193,7 +195,7 @@ export default function DoctorsPage() {
       </Card>
 
       {/* List */}
-      <Card className="p-0">
+      <Card className="min-w-0 p-0">
         {isLoading ? (
           <TableSkeleton rows={6} />
         ) : isError ? (
@@ -224,18 +226,18 @@ export default function DoctorsPage() {
           <>
             {/* Desktop table */}
             <Table
-              className="hidden md:block"
+              className="hidden min-w-0 md:block"
+              tableClassName="min-w-[1000px] table-fixed xl:min-w-0"
               columns={[
-                { key: 'name', label: 'Doctor' },
-                { key: 'specialization', label: 'Specialization' },
-                { key: 'hospital', label: 'Hospital' },
-                { key: 'patients', label: 'Patients' },
-                { key: 'created', label: 'Registered' },
-                { key: 'actions', label: '' },
+                { key: 'name', label: 'Doctor', width: '24%', className: 'pl-6 pr-5' },
+                { key: 'specialization', label: 'Specialization', width: '17%', className: 'px-4' },
+                { key: 'hospital', label: 'Hospital', width: '19%', className: 'px-4' },
+                { key: 'patients', label: 'Patients', width: '9%', className: 'px-4' },
+                { key: 'created', label: 'Registered', width: '15%', className: 'px-4' },
+                { key: 'actions', label: 'Actions', width: '16%', className: 'px-6 text-right' },
               ]}
             >
-              <tbody>
-                {rows.map((doc, i) => (
+              {rows.map((doc, i) => (
                   <motion.tr
                     key={doc.id || doc._id}
                     initial={{ opacity: 0 }}
@@ -243,20 +245,20 @@ export default function DoctorsPage() {
                     transition={{ delay: i * 0.03 }}
                     className="group border-b border-line last:border-0 hover:bg-ivory/60"
                   >
-                    <td className="py-3.5 pr-4">
-                      <Link href={`/doctors/${doc.id || doc._id}`} className="font-medium text-ink hover:text-forest hover:underline font-display">
+                    <td className="py-3.5 pl-6 pr-5 align-middle">
+                      <Link href={`/doctors/${doc.id || doc._id}`} className="block break-words font-semibold text-ink hover:text-forest hover:underline font-display">
                         {doc.name}
                       </Link>
-                      <p className="text-xs text-ink-soft">{doc.email}</p>
+                      <p className="mt-0.5 break-all text-xs text-ink-soft">{doc.email}</p>
                     </td>
-                    <td className="pr-4 text-sm text-ink">{doc.specialization}</td>
-                    <td className="pr-4 text-sm text-ink-soft">{doc.hospital}</td>
-                    <td className="pr-4">
+                    <td className="px-4 py-3.5 align-middle text-sm text-ink">{doc.specialization}</td>
+                    <td className="break-words px-4 py-3.5 align-middle text-sm text-ink-soft">{doc.hospital}</td>
+                    <td className="px-4 py-3.5 align-middle">
                       <Badge tone="lime">{doc.patientCount}</Badge>
                     </td>
-                    <td className="pr-4 text-sm text-ink-soft">{formatDate(doc.createdAt)}</td>
-                    <td className="pr-4">
-                      <div className="flex justify-end gap-1 opacity-60 transition group-hover:opacity-100">
+                    <td className="whitespace-nowrap px-4 py-3.5 align-middle text-sm text-ink-soft">{formatDate(doc.createdAt)}</td>
+                    <td className="px-6 py-3.5 align-middle">
+                      <div className="flex justify-end gap-1.5">
                         <IconLink
                           href={`/doctors/${doc.id || doc._id}`}
                           icon={Eye}
@@ -277,32 +279,39 @@ export default function DoctorsPage() {
                       </div>
                     </td>
                   </motion.tr>
-                ))}
-              </tbody>
+              ))}
             </Table>
 
             {/* Mobile cards */}
-            <div className=" Divide-y divide-line md:hidden">
+            <div className="divide-y divide-line md:hidden">
               {rows.map((doc) => (
-                <Link
-                  key={doc.id || doc._id}
-                  href={`/doctors/${doc.id || doc._id}`}
-                  className="block border-b border-line p-4 last:border-0 active:bg-ivory"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-ink font-display">{doc.name}</p>
-                      <p className="truncate text-xs text-ink-soft">
-                        {doc.specialization} · {doc.hospital}
-                      </p>
-                    </div>
-                    <Badge tone="lime">{doc.patientCount} pts</Badge>
+                <article key={doc.id || doc._id} className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-3 p-4">
+                  <Link
+                    href={`/doctors/${doc.id || doc._id}`}
+                    aria-label={`View ${doc.name}`}
+                    className="min-w-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime/60"
+                  >
+                    <span className="block break-words font-semibold text-ink font-display">{doc.name}</span>
+                    <span className="mt-0.5 block break-all text-xs text-ink-soft">{doc.email}</span>
+                  </Link>
+                  <div className="flex items-start gap-1">
+                    <IconLink href={`/doctors/${doc.id || doc._id}`} icon={Eye} label={`View ${doc.name}`} />
+                    <IconLink href={`/doctors/${doc.id || doc._id}/edit`} icon={Pencil} label={`Edit ${doc.name}`} />
+                    <button
+                      onClick={() => setPendingDelete({ id: doc.id || doc._id, name: doc.name })}
+                      className="rounded-lg p-2 text-ink-soft transition hover:bg-danger/10 hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/40 cursor-pointer"
+                      aria-label={`Delete ${doc.name}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-xs text-ink-soft">
-                    <span>{formatDate(doc.createdAt)}</span>
-                    <span className="text-ink-soft/70">View details →</span>
+                  <div className="col-span-2 grid min-w-0 grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-3 text-xs sm:grid-cols-3">
+                    <DoctorMeta label="Specialization" value={doc.specialization} />
+                    <DoctorMeta label="Hospital" value={doc.hospital} />
+                    <DoctorMeta label="Patients" value={doc.patientCount} />
+                    <DoctorMeta label="Registered" value={formatDate(doc.createdAt)} />
                   </div>
-                </Link>
+                </article>
               ))}
             </div>
 
@@ -326,14 +335,23 @@ export default function DoctorsPage() {
   );
 }
 
-function IconLink({ to, icon: Icon, label }) {
+function IconLink({ href, icon: Icon, label }) {
   return (
     <Link
-      to={to}
-      className="rounded-lg p-2 text-ink-soft transition hover:bg-ivory-dark hover:text-ink"
+      href={href}
+      className="rounded-lg p-2 text-ink-soft transition hover:bg-ivory-dark hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime/50"
       aria-label={label}
     >
       <Icon className="h-4 w-4" />
     </Link>
+  );
+}
+
+function DoctorMeta({ label, value }) {
+  return (
+    <div className="min-w-0">
+      <p className="font-medium uppercase tracking-wide text-ink-soft/75">{label}</p>
+      <p className="mt-0.5 break-words text-sm font-medium text-ink">{value}</p>
+    </div>
   );
 }

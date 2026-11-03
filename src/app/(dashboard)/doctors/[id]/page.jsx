@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { use } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -32,7 +33,7 @@ import { formatDate, initials } from '@/lib/utils';
  * Includes "remove patient from roster" without deleting the record.
  */
 export default function DoctorDetailsPage({ params }) {
-  const { id } = params;
+  const { id } = use(params);
   const router = useRouter();
   const doctorQuery = useDoctor(id);
   const [rosterPage, setRosterPage] = useState(1);
@@ -183,8 +184,7 @@ export default function DoctorDetailsPage({ params }) {
                 { key: 'actions', label: '' },
               ]}
             >
-              <tbody>
-                {roster.map((p, i) => (
+              {roster.map((p, i) => (
                   <motion.tr
                     key={p.id || p._id}
                     initial={{ opacity: 0 }}
@@ -215,8 +215,7 @@ export default function DoctorDetailsPage({ params }) {
                       </div>
                     </td>
                   </motion.tr>
-                ))}
-              </tbody>
+              ))}
             </Table>
 
             {/* Mobile roster cards */}

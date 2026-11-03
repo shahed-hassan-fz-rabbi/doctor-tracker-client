@@ -1,17 +1,18 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { use } from 'react';
 import { useDoctors } from '@/hooks/useDoctors';
 import { usePatient, useUpdatePatient } from '@/hooks/usePatients';
 import PatientForm from '@/features/patients/PatientForm';
 import { Card, PageHeader } from '@/components/ui/Cards';
-import TableSkeleton from '@/components/ui/Table';
+import { TableSkeleton } from '@/components/ui/Table';
 import EmptyState from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
 import { Users } from 'lucide-react';
 
 export default function EditPatientPage({ params }) {
-  const { id } = params;
+  const { id } = use(params);
   const router = useRouter();
   const { data, isLoading, isError, error } = usePatient(id);
   const updatePatient = useUpdatePatient();

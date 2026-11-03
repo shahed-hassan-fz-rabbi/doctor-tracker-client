@@ -20,7 +20,7 @@ import {
 import { TrendingUp, PieChart as PieIcon, Users as UsersIcon, Stethoscope } from 'lucide-react';
 import { usePatientGrowth, usePatientsByCondition, usePatientsPerDoctor, useDoctorSpecializations } from '@/hooks/useAnalytics';
 import { Card, PageHeader, Badge, StatCard } from '@/components/ui/Cards';
-import TableSkeleton from '@/components/ui/Table';
+import { TableSkeleton } from '@/components/ui/Table';
 import EmptyState from '@/components/ui/EmptyState';
 import { compactNumber } from '@/lib/utils';
 

@@ -1,19 +1,21 @@
 'use client';
 
 import Link from 'next/link';
+import { use } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Pencil, Trash2, Users, Phone, Mail, HeartPulse, CalendarDays } from 'lucide-react';
 import { usePatient, useDeletePatient } from '@/hooks/usePatients';
 import { Card, CardDark, PageHeader, Badge } from '@/components/ui/Cards';
 import Button from '@/components/ui/Button';
-import TableSkeleton from '@/components/ui/Table';
+import { TableSkeleton } from '@/components/ui/Table';
 import EmptyState from '@/components/ui/EmptyState';
 import { ConfirmDialog, useToast } from '@/components/ui/Toast';
 import { formatDate, initials } from '@/lib/utils';
 
 /** Patient details: identity card, assigned doctor, notes and audit dates. */
 export default function PatientDetailsPage({ params }) {
-  const { id } = params;
+  const { id } = use(params);
   const router = useRouter();
   const { data, isLoading, isError, error } = usePatient(id);
   const deletePatient = useDeletePatient();

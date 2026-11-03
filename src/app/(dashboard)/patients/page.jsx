@@ -44,6 +44,18 @@ export default function PatientsPage() {
     return () => clearTimeout(t);
   }, [searchInput]);
 
+  useEffect(() => {
+    function handleTopbarSearch(event) {
+      const value = event.detail?.query;
+      if (typeof value !== 'string') return;
+      setSearchInput(value);
+      setPage(1);
+    }
+
+    window.addEventListener('doctor-tracker:patient-search', handleTopbarSearch);
+    return () => window.removeEventListener('doctor-tracker:patient-search', handleTopbarSearch);
+  }, []);
+
   const listParams = useMemo(() => {
     const clean = Object.fromEntries(
       Object.entries({ ...filters, page, limit: 10 }).filter(([, v]) => v !== '' && v != null)
@@ -87,9 +99,9 @@ export default function PatientsPage() {
       />
 
       {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
-          <div className="flex-1 lg:max-w-sm">
+      <Card className="p-4 sm:p-5">
+        <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
+          <Field label="Search patients" className="min-w-0 xl:col-span-2">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
               <Input
@@ -100,10 +112,9 @@ export default function PatientsPage() {
                 aria-label="Search patients"
               />
             </div>
-          </div>
+          </Field>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:flex-1 xl:grid-cols-5">
-            <Field label="Condition">
+          <Field label="Condition" className="min-w-0">
               <Select
                 value={filters.condition}
                 onChange={(e) => {
@@ -119,9 +130,9 @@ export default function PatientsPage() {
                   </option>
                 ))}
               </Select>
-            </Field>
+          </Field>
 
-            <Field label="Gender">
+          <Field label="Gender" className="min-w-0">
               <Select
                 value={filters.gender}
                 onChange={(e) => {
@@ -137,31 +148,33 @@ export default function PatientsPage() {
                   </option>
                 ))}
               </Select>
-            </Field>
+          </Field>
 
-            <Field label="From">
+          <Field label="From" className="min-w-0">
               <Input
                 type="date"
                 value={filters.dateFrom}
+                aria-label="Filter from date"
                 onChange={(e) => {
                   setFilters((f) => ({ ...f, dateFrom: e.target.value }));
                   setPage(1);
                 }}
               />
-            </Field>
+          </Field>
 
-            <Field label="To">
+          <Field label="To" className="min-w-0">
               <Input
                 type="date"
                 value={filters.dateTo}
+                aria-label="Filter to date"
                 onChange={(e) => {
                   setFilters((f) => ({ ...f, dateTo: e.target.value }));
                   setPage(1);
                 }}
               />
-            </Field>
+          </Field>
 
-            <Field label="Sort by">
+          <Field label="Sort by" className="min-w-0">
               <Select
                 value={`${filters.sortBy}:${filters.sortOrder}`}
                 onChange={(e) => {
@@ -179,8 +192,7 @@ export default function PatientsPage() {
                 <option value="age:desc">Age (high→low)</option>
                 <option value="condition:asc">Condition (A→Z)</option>
               </Select>
-            </Field>
-          </div>
+          </Field>
 
           {hasFilters && (
             <button
@@ -189,7 +201,8 @@ export default function PatientsPage() {
                 setSearchInput('');
                 setPage(1);
               }}
-              className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg border border-line bg-white px-3 text-sm text-ink-soft hover:bg-ivory cursor-pointer"
+              className="inline-flex h-10 w-fit items-center gap-1.5 self-end rounded-lg border border-line bg-white px-3 text-sm text-ink-soft transition hover:bg-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime/50 cursor-pointer"
+              aria-label="Clear patient filters"
             >
               <X className="h-4 w-4" />
               Clear
@@ -199,7 +212,7 @@ export default function PatientsPage() {
       </Card>
 
       {/* Table */}
-      <Card className="p-0">
+      <Card className="min-w-0 p-0">
         {isLoading ? (
           <TableSkeleton rows={6} />
         ) : isError ? (
@@ -225,14 +238,15 @@ export default function PatientsPage() {
         ) : (
           <>
             <Table
-              className="hidden md:block"
+              className="hidden min-w-0 md:block"
+              tableClassName="min-w-[1105px] table-fixed"
               columns={[
-                { key: 'name', label: 'Patient' },
-                { key: 'age', label: 'Age / Gender' },
-                { key: 'condition', label: 'Condition' },
-                { key: 'doctor', label: 'Doctor' },
-                { key: 'created', label: 'Registered' },
-                { key: 'actions', label: '' },
+                { key: 'name', label: 'Patient', width: '260px', className: 'pl-6' },
+                { key: 'age', label: 'Age / Gender', width: '130px', className: 'pl-4' },
+                { key: 'condition', label: 'Condition', width: '170px', className: 'pl-4' },
+                { key: 'doctor', label: 'Doctor', width: '205px', className: 'pl-4' },
+                { key: 'created', label: 'Registered', width: '170px', className: 'pl-4' },
+                { key: 'actions', label: 'Actions', width: '170px', className: 'pl-4 pr-6 text-right' },
               ]}
             >
               {rows.map((p, i) => (
@@ -244,22 +258,22 @@ export default function PatientsPage() {
                   className="group border-b border-line last:border-0 hover:bg-ivory/60"
                   data-testid="patient-row"
                 >
-                  <td className="py-3.5 pr-4">
-                    <Link href={`/patients/${p.id || p._id}`} className="font-medium text-ink hover:underline font-display">
+                  <td className="py-3.5 pl-6 pr-5">
+                    <Link href={`/patients/${p.id || p._id}`} className="block break-words text-sm font-semibold text-ink hover:underline font-display">
                       {p.fullName}
                     </Link>
-                    <p className="text-xs text-ink-soft">{p.phone}</p>
+                    <p className="mt-0.5 whitespace-nowrap text-xs text-ink-soft">{p.phone}</p>
                   </td>
-                  <td className="pr-4 text-sm text-ink-soft">{p.age} · {p.gender}</td>
-                  <td className="pr-4">
+                  <td className="px-4 text-sm text-ink-soft"><span className="font-semibold text-ink">{p.age}</span><span className="mx-1 text-ink-soft/60">·</span>{p.gender}</td>
+                  <td className="px-4">
                     <Badge tone="green">{p.condition}</Badge>
                   </td>
-                  <td className="pr-4 text-sm text-ink-soft">
+                  <td className="break-words px-4 text-sm text-ink-soft">
                     {p.doctor ? p.doctor.name : <span className="italic">Unassigned</span>}
                   </td>
-                  <td className="pr-4 text-sm text-ink-soft">{formatDate(p.createdAt)}</td>
-                  <td className="pr-4">
-                    <div className="flex justify-end gap-1 opacity-60 transition group-hover:opacity-100">
+                  <td className="whitespace-nowrap px-4 text-sm text-ink-soft">{formatDate(p.createdAt)}</td>
+                  <td className="px-4">
+                    <div className="flex justify-end gap-1.5">
                       <IconLink href={`/patients/${p.id || p._id}`} icon={Eye} label={`View ${p.fullName}`} />
                       <IconLink href={`/patients/${p.id || p._id}/edit`} icon={Pencil} label={`Edit ${p.fullName}`} />
                       <button
@@ -276,24 +290,40 @@ export default function PatientsPage() {
             </Table>
 
             {/* Mobile cards */}
-            <div className="md:hidden">
+            <div className="divide-y divide-line md:hidden">
               {rows.map((p) => (
-                <Link
-                  key={p.id || p._id}
-                  href={`/patients/${p.id || p._id}`}
-                  className="flex items-center gap-3 border-b border-line p-4 last:border-0 active:bg-ivory"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-lime font-display text-xs font-bold text-forest">
-                    {initials(p.fullName)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-ink">{p.fullName}</p>
-                    <p className="truncate text-xs text-ink-soft">
-                      {p.condition} · {p.age} yrs · {p.doctor ? p.doctor.name : 'Unassigned'}
-                    </p>
+                <article key={p.id || p._id} className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-3 p-4">
+                  <Link
+                    href={`/patients/${p.id || p._id}`}
+                    aria-label={`View ${p.fullName}`}
+                    className="flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime/60"
+                  >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lime font-display text-xs font-bold text-forest shadow-soft">
+                      {initials(p.fullName)}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block break-words text-sm font-semibold text-ink">{p.fullName}</span>
+                      <span className="mt-0.5 block break-all text-xs text-ink-soft">{p.phone}</span>
+                    </span>
+                  </Link>
+                  <div className="flex items-center gap-1 self-center">
+                    <IconLink href={`/patients/${p.id || p._id}`} icon={Eye} label={`View ${p.fullName}`} />
+                    <IconLink href={`/patients/${p.id || p._id}/edit`} icon={Pencil} label={`Edit ${p.fullName}`} />
+                    <button
+                      onClick={() => setPendingDelete(p)}
+                      className="rounded-lg p-2 text-ink-soft transition hover:bg-danger/10 hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/40 cursor-pointer"
+                      aria-label={`Delete ${p.fullName}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
-                  <span className="shrink-0 text-xs text-ink-soft">{formatDate(p.createdAt)}</span>
-                </Link>
+                  <div className="col-span-2 grid min-w-0 grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-3 text-xs">
+                    <PatientMeta label="Age / Gender" value={`${p.age} · ${p.gender}`} />
+                    <PatientMeta label="Condition" value={p.condition} />
+                    <PatientMeta label="Doctor" value={p.doctor ? p.doctor.name : 'Unassigned'} />
+                    <PatientMeta label="Registered" value={formatDate(p.createdAt)} />
+                  </div>
+                </article>
               ))}
             </div>
 
@@ -317,14 +347,23 @@ export default function PatientsPage() {
   );
 }
 
-function IconLink({ to, icon: Icon, label }) {
+function IconLink({ href, icon: Icon, label }) {
   return (
     <Link
-      to={to}
+      href={href}
       className="rounded-lg p-2 text-ink-soft transition hover:bg-ivory-dark hover:text-ink"
       aria-label={label}
     >
       <Icon className="h-4 w-4" />
     </Link>
+  );
+}
+
+function PatientMeta({ label, value }) {
+  return (
+    <div className="min-w-0">
+      <p className="font-medium uppercase tracking-wide text-ink-soft/75">{label}</p>
+      <p className="mt-0.5 break-words text-sm font-medium text-ink">{value}</p>
+    </div>
   );
 }

@@ -7,10 +7,15 @@ import { cn } from '@/lib/utils';
  * (see each page). Keeping tables generic avoids duplication across the
  * doctors and patients pages.
  */
-export default function Table({ columns, children, className }) {
+export default function Table({ columns, children, className, tableClassName }) {
   return (
     <div className={cn('w-full overflow-x-auto scroll-thin', className)}>
-      <table className="w-full min-w-[720px] border-collapse text-left">
+      <table className={cn('w-full min-w-[720px] border-collapse text-left', tableClassName)}>
+        <colgroup>
+          {columns.map((col) => (
+            <col key={col.key} style={col.width ? { width: col.width } : undefined} />
+          ))}
+        </colgroup>
         <thead>
           <tr className="border-b border-line">
             {columns.map((col) => (
