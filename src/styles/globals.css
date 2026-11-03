@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  /* Doctor Tracker palette — Plumlime-inspired professional 2.5D SaaS */
+  --color-forest: #101b0b;
+  --color-forest-800: #17240f;
+  --color-forest-700: #1f2f14;
+  --color-forest-600: #2a3d1c;
+  --color-lime: #c9f45a;
+  --color-lime-soft: #d6e8a0;
+  --color-ivory: #f1f0e7;
+  --color-ivory-dark: #e9e8dd;
+  --color-ink: #172016;
+  --color-ink-soft: #687064;
+  --color-line: #e2e5d8;
+  --color-success: #3c9b58;
+  --color-warning: #e9a83b;
+  --color-danger: #d95757;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-manrope), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* 2.5D depth */
+  --shadow-soft: 0 1px 2px rgb(16 27 11 / 0.05), 0 2px 8px rgb(16 27 11 / 0.05);
+  --shadow-card: 0 1px 2px rgb(16 27 11 / 0.06), 0 8px 24px rgb(16 27 11 / 0.07);
+  --shadow-card-hover: 0 2px 4px rgb(16 27 11 / 0.08), 0 14px 36px rgb(16 27 11 / 0.12);
+  --shadow-lift: 0 10px 28px rgb(16 27 11 / 0.18);
+  --shadow-inset-top: inset 0 1px 0 rgb(255 255 255 / 0.55);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* thin, unobtrusive scrollbars for data panes */
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: #cbd2bd;
+  border-radius: 8px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
