@@ -1,106 +1,84 @@
-# Doctor Tracker Client
+# Doctor Tracker — Client
 
-Doctor Tracker is an admin portal for managing doctor and patient records. It pairs a responsive healthcare dashboard and record workflows with operational analytics served by the separate Doctor Tracker Express API.
+This is the web dashboard for Doctor Tracker. It gives administrators one place to manage doctor and patient records, follow doctor-patient assignments, and review the practice dashboard and analytics.
 
-## Features
+The client is a Next.js app. It gets its data from the separate Express API; it does not connect to MongoDB directly.
 
-- Admin login and session verification through an HttpOnly API cookie.
-- Doctor and patient lists with search, filters, sorting and server pagination.
-- Create, view, update and delete workflows, including doctor patient rosters.
-- Dashboard and analytics charts backed by API aggregation results.
-- Responsive navigation, reusable forms, tables, loading and empty states.
+## Screenshots
 
-## Stack
+These screenshots show the interface using development data.
 
-Next.js App Router (JavaScript), React, Tailwind CSS, TanStack Query, React Hook Form, Zod, Recharts, Framer Motion and Lucide React.
+| Dashboard | Doctors |
+|---|---|
+| ![Doctor Tracker dashboard on desktop](docs/screenshots/dashboard-desktop.png) | ![Doctor list on desktop](docs/screenshots/doctors-desktop.png) |
 
-## Local setup
+| Patients | Analytics |
+|---|---|
+| ![Patient list on desktop](docs/screenshots/patients-desktop.png) | ![Analytics page](docs/screenshots/analytics-desktop.png) |
 
-1. Install Node.js 20 or newer.
-2. In this repository, run `npm ci`.
-3. Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_API_URL` to the Express API base URL (default `http://localhost:4000/api/v1`).
-4. Start the backend separately, then run `npm run dev`.
-5. Open `http://localhost:3000`. Create an admin using the backend's `seed:admin` script and its environment configuration.
+| Dashboard on mobile | Patients on mobile |
+|---|---|
+| ![Doctor Tracker dashboard on a mobile screen](docs/screenshots/dashboard-mobile.png) | ![Patient list on a mobile screen](docs/screenshots/patients-mobile.png) |
 
-## Environment
+More views are available in [`docs/screenshots`](docs/screenshots), including the login page, doctor details, and the not-found page.
 
-| Variable | Purpose | Local default |
-|---|---|---|
-| `NEXT_PUBLIC_API_URL` | Versioned Express API base URL | `http://localhost:4000/api/v1` |
+## What’s included
 
-Never put credentials or private API secrets in `NEXT_PUBLIC_*`; Next.js exposes these values to the browser.
+- Admin sign-in with an HttpOnly session cookie.
+- Doctor and patient lists with search, filters, sorting, and server-side pagination.
+- Create, edit, view, and delete workflows, including doctor-patient assignments.
+- Dashboard metrics and analytics charts from the API.
+- Responsive navigation, forms, tables, and empty and error states.
 
-## Architecture
+## Built with
 
-The browser renders the Next.js app and uses TanStack Query hooks to call `src/lib/api.js`. That shared HTTP client sends credentials with `fetch` and never stores JWTs in browser storage. The standalone Express service validates the HttpOnly cookie and reads/writes MongoDB. The Next.js app does not implement business API routes.
+Next.js App Router, JavaScript, React, Tailwind CSS, TanStack Query, React Hook Form, Zod, Recharts, Framer Motion, and Lucide React.
 
-## Technical decisions
+## Run locally
 
-1. **Keep the API in a separate Express service.** This preserves independent client/server deployment and keeps authentication, validation and data rules in one REST API rather than coupling them to Next route handlers.
-2. **Use TanStack Query for server state.** Query keys, mutation invalidation, loading/error states and cached results are centralized around API data. React Hook Form and Zod handle field state and client-side validation, while the API repeats validation at the trust boundary.
+You’ll need Node.js 20 or newer and the Doctor Tracker API running separately.
 
-## Project layout
+```bash
+npm ci
+```
+
+Copy `.env.example` to `.env.local`. Set `NEXT_PUBLIC_API_URL` to the API base URL, including `/api/v1`. For a local API, use:
 
 ```text
-src/app/          App Router pages
-src/components/   Shared layout and UI components
-src/features/     Doctor and patient forms and schemas
-src/hooks/        Query and mutation hooks
-src/lib/          API client and helpers
-src/providers/    Query and toast providers
-src/styles/       Global styles and design tokens
+NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
 ```
+
+Then start the app:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000`. The API must allow that exact origin in `CORS_ORIGINS`. If Next.js selects another port because 3000 is busy, allow that origin too.
+
+## Configuration
+
+| Variable | What it’s for | Local example |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | The versioned Express API base URL | `http://localhost:4000/api/v1` |
+
+This value is visible in the browser, so keep credentials and private keys out of `NEXT_PUBLIC_*` variables.
+
+## How sign-in works
+
+The browser calls the Express API through `src/lib/api.js`. Requests include credentials so the browser can send the HttpOnly JWT cookie. The client does not put the token in local storage. `AuthGuard` checks `/auth/me` before showing protected pages.
 
 ## Checks
 
-- `npm test` — Vitest component, schema and utility tests.
-- `npm run build` — optimized Next.js production build.
+```bash
+npm test
+npm run build
+```
 
-## Deployment
+## Deploy to Vercel
 
-This repository is the Vercel project root; deploy the API separately as a Render Web Service (see the server repository README).
+Import `shahed-hassan-fz-rabbi/doctor-tracker-client` and deploy the `main` branch. Use the Next.js preset and repository root (`.`); `npm ci` and `npm run build` are the install and build commands. Leave the output directory at Vercel’s Next.js default.
 
-1. In Vercel, choose **Add New → Project**, import `shahed-hassan-fz-rabbi/doctor-tracker-client`, and select branch `main`.
-2. Set Framework Preset to **Next.js** and Root Directory to `.`. Use Install Command `npm ci` and Build Command `npm run build`; leave Output Directory at the Next.js default (do not override it).
-3. Add `NEXT_PUBLIC_API_URL` under **Environment Variables** for Production. Set it to the actual Render service URL followed by `/api/v1` (for example, `https://<your-render-service>.onrender.com/api/v1`). This URL is public; never put credentials or backend secrets in a `NEXT_PUBLIC_*` variable.
-4. Deploy. Copy the actual production origin shown by Vercel (scheme and hostname only; no path or trailing slash) into the backend's `CORS_ORIGINS` setting on Render.
-5. If you use Vercel Preview deployments, add `NEXT_PUBLIC_API_URL` for Preview as well and add the exact preview origin(s) to the API allow-list. Do not use `*` with credentialed CORS.
-6. After changing an environment variable, redeploy the affected service so the new build/runtime receives it.
+Set `NEXT_PUBLIC_API_URL` for Production to the Render API URL ending in `/api/v1`. The current production API base is `https://doctor-tracker-server-29dm.onrender.com/api/v1`. After Vercel gives you the frontend domain, add that exact origin to the backend’s `CORS_ORIGINS` setting. If you use Preview deployments, configure their API URL and allow only the exact preview origins. Keep both services on HTTPS so the session cookie can be sent securely.
 
-In Render, use `COOKIE_SECURE=true` and HTTPS. The API sets the session cookie `Secure; HttpOnly; SameSite=None` for the separate Vercel and Render sites. Browser privacy settings may still block cross-site cookies; verify login on the deployed domains. If blocked, use compatible custom domains under one site or an API proxy architecture rather than weakening cookie/CORS security.
-
-Because the JWT is stored in an HttpOnly cookie owned by the API domain, route protection is verified in the browser through `/auth/me` (`AuthGuard`), not in Next.js middleware. Keep the API and client on HTTPS in production.
-
-No live deployment has been created from this repository. The example hostname above is a placeholder; use the domain Vercel actually assigns.
-
-
-## Visual evidence
-
-Screenshots were captured from the running app against the development API.
-
-### Desktop
-
-| Login | Dashboard |
-|---|---|
-| ![Login screen](docs/screenshots/login-desktop.png) | ![Dashboard](docs/screenshots/dashboard-desktop.png) |
-
-| Doctors | Patients |
-|---|---|
-| ![Doctors list](docs/screenshots/doctors-desktop.png) | ![Patients list](docs/screenshots/patients-desktop.png) |
-
-| Analytics | Doctor detail |
-|---|---|
-| ![Analytics](docs/screenshots/analytics-desktop.png) | ![Doctor detail](docs/screenshots/doctor-detail-desktop.png) |
-
-### Mobile (390 × 844)
-
-| Dashboard | Doctors | Patients |
-|---|---|---|
-| ![Mobile dashboard](docs/screenshots/dashboard-mobile.png) | ![Mobile doctors](docs/screenshots/doctors-mobile.png) | ![Mobile patients](docs/screenshots/patients-mobile.png) |
-
-### Not Found
-
-| Desktop | Mobile |
-|---|---|
-| ![Desktop 404](docs/screenshots/not-found-desktop.png) | ![Mobile 404](docs/screenshots/not-found-mobile.png) |
-
+The actual Vercel domain is managed in Vercel; don’t copy an example hostname from this README as if it were your project’s domain.
