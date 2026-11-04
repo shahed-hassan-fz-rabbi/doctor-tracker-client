@@ -17,6 +17,7 @@ import { useLogout } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/Toast';
 import { cn, initials } from '@/lib/utils';
 import BrandMark from '@/components/ui/BrandMark';
+import { IS_DEMO } from '@/lib/api';
 
 /**
  * Dark forest sidebar — the visual anchor of the design system.
@@ -96,6 +97,8 @@ export default function Sidebar({ open, onClose, user }) {
           );
         })}
       </nav>
+
+      {IS_DEMO && <div className="mx-4 rounded-lg border border-lime/30 bg-forest-700/60 px-3 py-2 text-center text-[11px] font-semibold tracking-wide text-lime-soft">DEMO · READ ONLY</div>}
 
       {/* Admin identity + logout */}
       <div className="border-t border-forest-600 p-4">

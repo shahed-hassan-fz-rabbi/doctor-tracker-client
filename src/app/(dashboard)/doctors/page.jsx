@@ -24,6 +24,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import { ConfirmDialog, useToast } from '@/components/ui/Toast';
 import { Input, Select, Field } from '@/components/ui/Form';
 import { formatDate } from '@/lib/utils';
+import { IS_DEMO } from '@/lib/api';
 
 /**
  * Doctors index page: server-side search (debounced), specialization filter,
@@ -89,12 +90,12 @@ export default function DoctorsPage() {
       <PageHeader
         title="Doctors"
         description="Registered specialists across every partner hospital."
-        action={
+        action={!IS_DEMO && (
           <Button onClick={() => router.push('/doctors/new')}>
             <Plus className="h-4 w-4" />
             Add Doctor
           </Button>
-        }
+        )}
       />
 
       {/* Filter bar */}
@@ -214,7 +215,7 @@ export default function DoctorsPage() {
                 : 'Register the first doctor to start building the roster.'
             }
             action={
-              !hasFilters && (
+              !hasFilters && !IS_DEMO && (
                 <Button onClick={() => router.push('/doctors/new')}>
                   <Plus className="h-4 w-4" />
                   Add Doctor
@@ -264,6 +265,7 @@ export default function DoctorsPage() {
                           icon={Eye}
                           label={`View ${doc.name}`}
                         />
+                        {!IS_DEMO && <>
                         <IconLink
                           href={`/doctors/${doc.id || doc._id}/edit`}
                           icon={Pencil}
@@ -276,6 +278,7 @@ export default function DoctorsPage() {
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
+                        </>}
                       </div>
                     </td>
                   </motion.tr>
@@ -296,7 +299,8 @@ export default function DoctorsPage() {
                   </Link>
                   <div className="flex items-start gap-1">
                     <IconLink href={`/doctors/${doc.id || doc._id}`} icon={Eye} label={`View ${doc.name}`} />
-                    <IconLink href={`/doctors/${doc.id || doc._id}/edit`} icon={Pencil} label={`Edit ${doc.name}`} />
+                    {!IS_DEMO && <IconLink href={`/doctors/${doc.id || doc._id}/edit`} icon={Pencil} label={`Edit ${doc.name}`} />}
+                    {!IS_DEMO && <>
                     <button
                       onClick={() => setPendingDelete({ id: doc.id || doc._id, name: doc.name })}
                       className="rounded-lg p-2 text-ink-soft transition hover:bg-danger/10 hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/40 cursor-pointer"
@@ -304,6 +308,7 @@ export default function DoctorsPage() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
+                    </>}
                   </div>
                   <div className="col-span-2 grid min-w-0 grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-3 text-xs sm:grid-cols-3">
                     <DoctorMeta label="Specialization" value={doc.specialization} />

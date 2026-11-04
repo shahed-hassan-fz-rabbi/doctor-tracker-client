@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -26,6 +28,7 @@ import {
   Legend,
 } from 'recharts';
 import { useAnalyticsOverview, useDoctorSpecializations } from '@/hooks/useAnalytics';
+import { useMe } from '@/hooks/useAuth';
 import { StatCard, Card, CardDark, PageHeader, Badge } from '@/components/ui/Cards';
 import EmptyState from '@/components/ui/EmptyState';
 import { TableSkeleton } from '@/components/ui/Table';
@@ -44,8 +47,37 @@ const CHART_TOOLTIP = {
 };
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { data: authData, isSuccess: authSuccess } = useMe();
   const { data, isLoading, isError } = useAnalyticsOverview();
   const stats = data?.data;
+  const user = authData?.data?.user;
+
+  // Redirect viewers to restricted access page
+  useEffect(() => {
+    if (authSuccess && user?.role !== 'admin') {
+      router.replace('/restricted');
+    }
+  }, [authSuccess, user?.role, router]);
+
+  // Show loading while checking auth
+  if (!authSuccess) {
+    return (
+      <div className="space-y-6">
+        <div className="h-10 w-64 animate-pulse rounded bg-ivory-dark" />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-40 animate-pulse rounded-2xl bg-ivory-dark" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // If viewer, return null (redirecting)
+  if (user?.role !== 'admin') {
+    return null;
+  }
 
   if (isError) {
     return (

@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { Search, X, Plus, Users, Trash2, Pencil, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { IS_DEMO } from '@/lib/api';
 
 /**
  * Patients index page: server-side search (debounced), condition/gender/doctor
@@ -90,12 +91,12 @@ export default function PatientsPage() {
       <PageHeader
         title="Patients"
         description="Every registered patient across the practice."
-        action={
+        action={!IS_DEMO && (
           <Button onClick={() => router.push('/patients/new')}>
             <Plus className="h-4 w-4" />
             Add Patient
           </Button>
-        }
+        )}
       />
 
       {/* Filters */}
@@ -227,7 +228,7 @@ export default function PatientsPage() {
             title={hasFilters ? 'No patients match your filters' : 'No patients yet'}
             description={hasFilters ? 'Try adjusting or clearing the filters above.' : 'Register the first patient to get started.'}
             action={
-              !hasFilters && (
+              !hasFilters && !IS_DEMO && (
                 <Button onClick={() => router.push('/patients/new')}>
                   <Plus className="h-4 w-4" />
                   Add Patient
@@ -275,7 +276,8 @@ export default function PatientsPage() {
                   <td className="px-4">
                     <div className="flex justify-end gap-1.5">
                       <IconLink href={`/patients/${p.id || p._id}`} icon={Eye} label={`View ${p.fullName}`} />
-                      <IconLink href={`/patients/${p.id || p._id}/edit`} icon={Pencil} label={`Edit ${p.fullName}`} />
+                      {!IS_DEMO && <IconLink href={`/patients/${p.id || p._id}/edit`} icon={Pencil} label={`Edit ${p.fullName}`} />}
+                      {!IS_DEMO && <>
                       <button
                         onClick={() => setPendingDelete(p)}
                         className="rounded-lg p-2 text-ink-soft transition hover:bg-danger/10 hover:text-danger cursor-pointer"
@@ -283,6 +285,7 @@ export default function PatientsPage() {
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
+                      </>}
                     </div>
                   </td>
                 </motion.tr>
@@ -308,7 +311,8 @@ export default function PatientsPage() {
                   </Link>
                   <div className="flex items-center gap-1 self-center">
                     <IconLink href={`/patients/${p.id || p._id}`} icon={Eye} label={`View ${p.fullName}`} />
-                    <IconLink href={`/patients/${p.id || p._id}/edit`} icon={Pencil} label={`Edit ${p.fullName}`} />
+                    {!IS_DEMO && <IconLink href={`/patients/${p.id || p._id}/edit`} icon={Pencil} label={`Edit ${p.fullName}`} />}
+                    {!IS_DEMO && <>
                     <button
                       onClick={() => setPendingDelete(p)}
                       className="rounded-lg p-2 text-ink-soft transition hover:bg-danger/10 hover:text-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/40 cursor-pointer"
@@ -316,6 +320,7 @@ export default function PatientsPage() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
+                    </>}
                   </div>
                   <div className="col-span-2 grid min-w-0 grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-3 text-xs">
                     <PatientMeta label="Age / Gender" value={`${p.age} · ${p.gender}`} />

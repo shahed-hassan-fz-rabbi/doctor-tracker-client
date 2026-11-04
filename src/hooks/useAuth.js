@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, IS_DEMO } from '@/lib/api';
 
 export const AUTH_KEYS = {
   me: ['auth', 'me'],
@@ -18,7 +18,7 @@ export function useMe() {
 export function useLogin() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ email, password }) => apiFetch('/auth/login', { method: 'POST', body: { email, password } }),
+    mutationFn: ({ email, password }) => apiFetch(IS_DEMO ? '/auth/demo-login' : '/auth/login', { method: 'POST', body: { email, password } }),
     onSuccess: (data) => {
       // prime the cache so the guard + sidebar render instantly
       qc.setQueryData(AUTH_KEYS.me, data);

@@ -37,4 +37,25 @@ describe('apiFetch', () => {
     await vi.advanceTimersByTimeAsync(12000);
     await assertion;
   });
+
+  it('fails closed when demo API configuration is missing', async () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_ENV', 'demo');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_API_URL', '');
+    vi.resetModules();
+    const { apiFetch: demoFetch } = await import('./api');
+    await expect(demoFetch('/auth/me')).rejects.toThrow(/Demo API is not configured/);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('uses only the dedicated demo API base URL', async () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_ENV', 'demo');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_API_URL', 'https://demo-api.example.test/api/v1');
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://production-api.example.test/api/v1');
+    vi.resetModules();
+    const { apiFetch: demoFetch } = await import('./api');
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) });
+    vi.stubGlobal('fetch', fetchMock);
+    await demoFetch('/auth/me');
+    expect(fetchMock.mock.calls[0][0]).toBe('https://demo-api.example.test/api/v1/auth/me');
+  });
 });

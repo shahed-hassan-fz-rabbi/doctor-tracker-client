@@ -7,19 +7,21 @@ import { AlertCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AUTH_KEYS } from '@/hooks/useAuth';
 import BrandLoadingScreen from '@/components/ui/BrandLoadingScreen';
+import { IS_DEMO } from '@/lib/api';
 
 /**
  * Client-side route protection. The JWT lives in an HttpOnly cookie owned
  * by the Express API, so Next middleware cannot read it; /auth/me is the
  * single verification point. These routes are public:
  */
-const PUBLIC_ROUTES = ['/login'];
+const PUBLIC_ROUTES = ['/login', '/restricted'];
 
 export default function AuthGuard({ children }) {
   const pathname = usePathname() || '';
   const router = useRouter();
   const queryClient = useQueryClient();
   const isPublic = PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
+  const isWriteRoute = /\/(new|edit)(\/|$)/.test(pathname);
 
   const { isLoading, isError, error, refetch, isFetching } = useMe();
 
@@ -27,18 +29,32 @@ export default function AuthGuard({ children }) {
     const refreshSession = () => {
       queryClient.invalidateQueries({ queryKey: AUTH_KEYS.me });
     };
+    const handleForbidden = () => {
+      router.replace('/restricted');
+    };
     window.addEventListener('doctor-tracker:unauthorized', refreshSession);
-    return () => window.removeEventListener('doctor-tracker:unauthorized', refreshSession);
-  }, [queryClient]);
+    window.addEventListener('doctor-tracker:forbidden', handleForbidden);
+    return () => {
+      window.removeEventListener('doctor-tracker:unauthorized', refreshSession);
+      window.removeEventListener('doctor-tracker:forbidden', handleForbidden);
+    };
+  }, [queryClient, router]);
 
   useEffect(() => {
     if (!isPublic && isError && error?.status === 401) {
       router.replace(`/login?next=${encodeURIComponent(pathname)}`);
     }
+    if (!isPublic && isError && error?.status === 403) {
+      router.replace('/restricted');
+    }
   }, [isPublic, isError, error?.status, router, pathname]);
 
   // Public pages render directly (login page handles redirect-if-authed).
   if (isPublic) return children;
+
+  if (IS_DEMO && isWriteRoute) {
+    return <main className="flex min-h-screen items-center justify-center bg-ivory px-4 text-center text-ink"><section className="max-w-md rounded-2xl border border-line bg-white p-6 shadow-card"><h1 className="font-display text-lg font-bold">Read-only demo</h1><p className="mt-2 text-sm text-ink-soft">Record changes are disabled in the public demo.</p></section></main>;
+  }
 
   if (isLoading) return <BrandLoadingScreen />;
 

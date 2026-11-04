@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Loader2, LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Loader2, LogIn, Eye, EyeOff, AlertCircle, Copy, Check } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ import { Input, Field } from '@/components/ui/Form';
 import Button from '@/components/ui/Button';
 import { safeNextPath } from '@/lib/navigation';
 import BrandMark from '@/components/ui/BrandMark';
-import { API_BASE } from '@/lib/api';
+import { API_BASE, DEMO_CREDENTIALS, IS_DEMO } from '@/lib/api';
 
 const loginSchema = z.object({
   email: z.string().trim().min(1, 'Email is required').email('Enter a valid email'),
@@ -40,10 +40,12 @@ function LoginContent() {
   const toast = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [copied, setCopied] = useState('');
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(loginSchema),
@@ -66,6 +68,7 @@ function LoginContent() {
    * redirects to Google's consent screen. No tokens pass through the frontend.
    */
   function handleGoogleLogin() {
+    if (IS_DEMO) return;
     setGoogleLoading(true);
     // Full-page navigation — not a fetch. The backend handles everything.
     window.location.href = `${API_BASE}/auth/google`;
@@ -125,9 +128,7 @@ function LoginContent() {
           </div>
 
           <h1 className="font-display text-2xl font-bold text-ink sm:text-3xl">Sign in</h1>
-          <p className="mt-2 text-sm text-ink-soft">
-            Sign in with Google or your administrator credentials.
-          </p>
+          <p className="mt-2 text-sm text-ink-soft">{IS_DEMO ? 'Explore Doctor Tracker using a restricted, read-only demo account.' : 'Sign in with Google or your administrator credentials.'}</p>
 
           {/* OAuth error banner */}
           {oauthError && (
@@ -140,7 +141,7 @@ function LoginContent() {
           )}
 
           {/* Google Sign-In */}
-          <div className="mt-6">
+          {!IS_DEMO && <div className="mt-6">
             <button
               type="button"
               onClick={handleGoogleLogin}
@@ -161,17 +162,17 @@ function LoginContent() {
               )}
               {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
             </button>
-          </div>
+          </div>}
 
           {/* Divider */}
-          <div className="relative my-6">
+          {!IS_DEMO && <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-line" />
             </div>
             <div className="relative flex justify-center text-xs text-ink-soft">
               <span className="bg-ivory px-3">or sign in with admin credentials</span>
             </div>
-          </div>
+          </div>}
 
           {/* Email / Password form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -179,7 +180,7 @@ function LoginContent() {
               <Input
                 type="email"
                 autoComplete="email"
-                placeholder="admin@example.com"
+                placeholder={IS_DEMO ? 'demo@example.com' : 'admin@example.com'}
                 error={errors.email}
                 {...register('email')}
               />
@@ -218,12 +219,37 @@ function LoginContent() {
             </Button>
           </form>
 
-          <p className="mt-8 rounded-xl border border-line bg-white p-4 text-xs leading-relaxed text-ink-soft">
+          {IS_DEMO ? (
+            <section aria-label="Demo credentials" className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+              <div className="mb-4">
+                <h2 className="font-display text-base font-bold text-ink">Demo Credentials</h2>
+                <p className="mt-1 text-xs text-ink-soft">Viewer access to synthetic records. All changes are disabled.</p>
+              </div>
+              {DEMO_CREDENTIALS?.email && DEMO_CREDENTIALS?.password ? (
+                <div className="space-y-3">
+                  {[["Demo Email", DEMO_CREDENTIALS.email, 'email'], ["Demo Password", DEMO_CREDENTIALS.password, 'password']].map(([label, value, key]) => (
+                    <div key={key}>
+                      <p className="mb-1 text-xs font-semibold text-ink-soft">{label}</p>
+                      <div className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-ivory/60 p-2">
+                        <code className="min-w-0 flex-1 break-all text-xs text-ink">{value}</code>
+                        <button type="button" onClick={async () => { await navigator.clipboard.writeText(value); setCopied(key); setTimeout(() => setCopied(''), 1600); }} className="inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-forest hover:bg-lime/20" aria-label={`Copy ${label}`}>
+                          {copied === key ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}{copied === key ? 'Copied' : 'Copy'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <Button type="button" className="w-full" onClick={() => { setValue('email', DEMO_CREDENTIALS.email, { shouldValidate: true }); setValue('password', DEMO_CREDENTIALS.password, { shouldValidate: true }); }}>
+                    Try Demo Account
+                  </Button>
+                </div>
+              ) : <p role="status" className="text-sm text-ink-soft">Demo access is not configured for this deployment.</p>}
+            </section>
+          ) : <p className="mt-8 rounded-xl border border-line bg-white p-4 text-xs leading-relaxed text-ink-soft">
             <strong className="text-ink">Google users</strong> are registered automatically with
             viewer access.{' '}
             <strong className="text-ink">Administrator</strong> accounts are provisioned from the
             backend environment — not stored in this app.
-          </p>
+          </p>}
         </motion.div>
       </div>
     </div>
@@ -238,7 +264,14 @@ export default function LoginPage() {
   const router = useRouter();
   const { data, isSuccess } = useMe();
   useEffect(() => {
-    if (isSuccess && data?.data?.user) router.replace('/dashboard');
+    if (isSuccess && data?.data?.user) {
+      // If viewer, go to restricted page
+      if (data.data.user.role !== 'admin') {
+        router.replace('/restricted');
+      } else {
+        router.replace('/dashboard');
+      }
+    }
   }, [isSuccess, data, router]);
 
   return (

@@ -3,7 +3,15 @@
  * The Express API is a separate service — this is the ONLY place that
  * knows its address, plus one small credentials-aware fetch wrapper.
  */
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+export const IS_DEMO = process.env.NEXT_PUBLIC_APP_ENV === 'demo';
+const configuredApiBase = IS_DEMO
+  ? process.env.NEXT_PUBLIC_DEMO_API_URL
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1');
+// A demo build fails closed instead of ever falling back to the production API.
+export const API_BASE = configuredApiBase || '';
+export const DEMO_CREDENTIALS = IS_DEMO
+  ? { email: process.env.NEXT_PUBLIC_DEMO_EMAIL || '', password: process.env.NEXT_PUBLIC_DEMO_PASSWORD || '' }
+  : null;
 const REQUEST_TIMEOUT_MS = 12000;
 
 /**
@@ -12,6 +20,7 @@ const REQUEST_TIMEOUT_MS = 12000;
  * carrying { status, details }.
  */
 export async function apiFetch(path, { method = 'GET', body, signal, params } = {}) {
+  if (!API_BASE) throw new Error('The Demo API is not configured for this deployment.');
   let url = `${API_BASE}${path}`;
   if (params) {
     const qs = new URLSearchParams();
@@ -68,9 +77,14 @@ export async function apiFetch(path, { method = 'GET', body, signal, params } = 
     const error = new Error(payload?.message || `Request failed (${res.status})`);
     error.status = res.status;
     error.details = payload?.details || null;
-    if (res.status === 401 && path !== '/auth/me' && path !== '/auth/login') {
+    if (res.status === 401 && path !== '/auth/me' && path !== '/auth/login' && path !== '/auth/demo-login') {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('doctor-tracker:unauthorized'));
+      }
+    }
+    if (res.status === 403) {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('doctor-tracker:forbidden'));
       }
     }
     throw error;

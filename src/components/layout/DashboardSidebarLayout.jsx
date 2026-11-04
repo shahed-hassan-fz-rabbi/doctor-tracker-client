@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
 import { useMe } from '@/hooks/useAuth';
+import { IS_DEMO } from '@/lib/api';
 
 /**
  * Shared shell for every protected page: fixed desktop sidebar,
@@ -20,6 +21,7 @@ export default function DashboardSidebarLayout({ children }) {
 
       <div className="md:pl-[260px]">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
+        {IS_DEMO && <div className="border-b border-lime/30 bg-forest px-4 py-2 text-center text-xs font-semibold tracking-wide text-lime-soft">DEMO ENVIRONMENT · Synthetic data · Read-only access</div>}
         <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           {children}
         </main>
