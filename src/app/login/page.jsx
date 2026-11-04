@@ -13,7 +13,7 @@ import { Input, Field } from '@/components/ui/Form';
 import Button from '@/components/ui/Button';
 import { safeNextPath } from '@/lib/navigation';
 import BrandMark from '@/components/ui/BrandMark';
-import { API_BASE, DEMO_CREDENTIALS, IS_DEMO } from '@/lib/api';
+import { API_BASE, DEMO_AVAILABLE, DEMO_CREDENTIALS, IS_DEMO } from '@/lib/api';
 
 const loginSchema = z.object({
   email: z.string().trim().min(1, 'Email is required').email('Enter a valid email'),
@@ -221,11 +221,17 @@ function LoginContent() {
 
           {IS_DEMO ? (
             <section aria-label="Demo credentials" className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
-              <div className="mb-4">
-                <h2 className="font-display text-base font-bold text-ink">Demo Credentials</h2>
-                <p className="mt-1 text-xs text-ink-soft">Viewer access to synthetic records. All changes are disabled.</p>
+              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-base font-bold text-ink">Try the Demo Account</h2>
+                  <p className="mt-1 text-xs text-ink-soft">Explore Doctor Tracker using sample data. Changes are disabled.</p>
+                </div>
+                <div className="flex gap-2">
+                  <span className="rounded-full bg-lime/25 px-2.5 py-1 text-[10px] font-bold tracking-wide text-forest">DEMO ACCOUNT</span>
+                  <span className="rounded-full bg-ivory px-2.5 py-1 text-[10px] font-bold tracking-wide text-ink-soft">READ ONLY</span>
+                </div>
               </div>
-              {DEMO_CREDENTIALS?.email && DEMO_CREDENTIALS?.password ? (
+              {DEMO_AVAILABLE && DEMO_CREDENTIALS?.email && DEMO_CREDENTIALS?.password ? (
                 <div className="space-y-3">
                   {[["Demo Email", DEMO_CREDENTIALS.email, 'email'], ["Demo Password", DEMO_CREDENTIALS.password, 'password']].map(([label, value, key]) => (
                     <div key={key}>
@@ -242,14 +248,31 @@ function LoginContent() {
                     Try Demo Account
                   </Button>
                 </div>
-              ) : <p role="status" className="text-sm text-ink-soft">Demo access is not configured for this deployment.</p>}
+              ) : (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-ivory/60 p-3">
+                  <span role="status" className="text-xs font-bold tracking-wide text-ink-soft">DEMO COMING SOON</span>
+                  <Button type="button" className="w-full sm:w-auto" disabled>Try Demo Account</Button>
+                </div>
+              )}
             </section>
-          ) : <p className="mt-8 rounded-xl border border-line bg-white p-4 text-xs leading-relaxed text-ink-soft">
-            <strong className="text-ink">Google users</strong> are registered automatically with
-            viewer access.{' '}
-            <strong className="text-ink">Administrator</strong> accounts are provisioned from the
-            backend environment — not stored in this app.
-          </p>}
+          ) : (
+            <section aria-label="Demo account" className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
+              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-base font-bold text-ink">Try the Demo Account</h2>
+                  <p className="mt-1 text-xs text-ink-soft">Explore Doctor Tracker using sample data. Changes are disabled.</p>
+                </div>
+                <div className="flex gap-2">
+                  <span className="rounded-full bg-lime/25 px-2.5 py-1 text-[10px] font-bold tracking-wide text-forest">DEMO ACCOUNT</span>
+                  <span className="rounded-full bg-ivory px-2.5 py-1 text-[10px] font-bold tracking-wide text-ink-soft">READ ONLY</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-ivory/60 p-3">
+                <span role="status" className="text-xs font-bold tracking-wide text-ink-soft">DEMO COMING SOON</span>
+                <Button type="button" className="w-full sm:w-auto" disabled>Try Demo Account</Button>
+              </div>
+            </section>
+          )}
         </motion.div>
       </div>
     </div>

@@ -4,12 +4,14 @@
  * knows its address, plus one small credentials-aware fetch wrapper.
  */
 export const IS_DEMO = process.env.NEXT_PUBLIC_APP_ENV === 'demo';
+// Only expose demo credentials after the isolated demo has passed end-to-end verification.
+export const DEMO_AVAILABLE = IS_DEMO && process.env.NEXT_PUBLIC_DEMO_AVAILABLE === 'true';
 const configuredApiBase = IS_DEMO
   ? process.env.NEXT_PUBLIC_DEMO_API_URL
   : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1');
 // A demo build fails closed instead of ever falling back to the production API.
 export const API_BASE = configuredApiBase || '';
-export const DEMO_CREDENTIALS = IS_DEMO
+export const DEMO_CREDENTIALS = DEMO_AVAILABLE
   ? { email: process.env.NEXT_PUBLIC_DEMO_EMAIL || '', password: process.env.NEXT_PUBLIC_DEMO_PASSWORD || '' }
   : null;
 const REQUEST_TIMEOUT_MS = 12000;

@@ -60,4 +60,19 @@ describe('apiFetch', () => {
     await demoFetch('/auth/me');
     expect(fetchMock.mock.calls[0][0]).toBe('https://demo-api.example.test/api/v1/auth/me');
   });
+
+  it('keeps demo credentials hidden until the separate demo is marked available', async () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_ENV', 'demo');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_EMAIL', 'demo@example.test');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_PASSWORD', 'public-demo-password');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_AVAILABLE', 'false');
+    vi.resetModules();
+    const unavailable = await import('./api');
+    expect(unavailable.DEMO_CREDENTIALS).toBeNull();
+
+    vi.stubEnv('NEXT_PUBLIC_DEMO_AVAILABLE', 'true');
+    vi.resetModules();
+    const available = await import('./api');
+    expect(available.DEMO_CREDENTIALS).toEqual({ email: 'demo@example.test', password: 'public-demo-password' });
+  });
 });
