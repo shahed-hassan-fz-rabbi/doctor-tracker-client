@@ -12,11 +12,11 @@ import {
   UserCircle,
   LogOut,
   X,
-  HeartPulse,
 } from 'lucide-react';
 import { useLogout } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/Toast';
 import { cn, initials } from '@/lib/utils';
+import BrandMark from '@/components/ui/BrandMark';
 
 /**
  * Dark forest sidebar — the visual anchor of the design system.
@@ -50,9 +50,7 @@ export default function Sidebar({ open, onClose, user }) {
       {/* Brand */}
       <div className="flex items-center gap-3 px-5 py-6">
         <Link href="/dashboard" className="flex items-center gap-3" onClick={onClose}>
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime shadow-[0_4px_12px_rgba(201,244,90,0.35)]">
-            <HeartPulse className="h-5 w-5 text-forest" strokeWidth={2.5} />
-          </span>
+          <BrandMark size={40} className="shadow-[0_4px_12px_rgba(201,244,90,0.35)]" />
           <span>
             <span className="block font-display text-base font-bold text-white leading-tight">
               Doctor Tracker

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { HeartPulse, Loader2, LogIn, Eye, EyeOff } from 'lucide-react';
+import { Loader2, LogIn, Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/Toast';
 import { Input, Field } from '@/components/ui/Form';
 import Button from '@/components/ui/Button';
 import { safeNextPath } from '@/lib/navigation';
+import BrandMark from '@/components/ui/BrandMark';
 
 const loginSchema = z.object({
   email: z.string().trim().min(1, 'Email is required').email('Enter a valid email'),
@@ -57,9 +58,7 @@ function LoginContent() {
 
         <div className="relative p-10">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-lime shadow-[0_4px_16px_rgba(201,244,90,0.4)]">
-              <HeartPulse className="h-6 w-6 text-forest" strokeWidth={2.5} />
-            </span>
+            <BrandMark size={44} priority className="shadow-[0_4px_16px_rgba(201,244,90,0.4)]" />
             <span className="font-display text-lg font-bold text-white">Doctor Tracker</span>
           </div>
         </div>
@@ -98,9 +97,7 @@ function LoginContent() {
           className="w-full max-w-md"
         >
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-forest">
-              <HeartPulse className="h-5 w-5 text-lime" strokeWidth={2.5} />
-            </span>
+            <BrandMark size={40} priority />
             <span className="font-display text-base font-bold text-ink">Doctor Tracker</span>
           </div>
 

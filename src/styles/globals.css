@@ -49,3 +49,64 @@ body {
 .scroll-thin::-webkit-scrollbar-track {
   background: transparent;
 }
+
+@keyframes dt-loader-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dt-loader-mark {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes dt-loading-progress {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(310%);
+  }
+}
+
+.dt-loader-card {
+  animation: dt-loader-enter 360ms ease-out both;
+}
+
+.dt-loader-mark {
+  animation: dt-loader-mark 2.4s ease-in-out infinite;
+}
+
+.dt-loading-track {
+  position: relative;
+}
+
+.dt-loading-progress::before {
+  display: block;
+  width: 34%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-lime-soft), var(--color-lime));
+  box-shadow: 0 0 14px rgb(201 244 90 / 0.45);
+  content: '';
+  animation: dt-loading-progress 1.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-loader-card,
+  .dt-loader-mark,
+  .dt-loading-progress::before {
+    animation: none !important;
+  }
+}

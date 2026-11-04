@@ -32,7 +32,8 @@ describe('AuthGuard', () => {
   it('shows a temporary loading state while checking the session', () => {
     useMeMock.mockReturnValue({ isLoading: true, isError: false });
     renderGuard();
-    expect(screen.getByText('Loading Doctor Tracker…')).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Loading Doctor Tracker' })).toBeInTheDocument();
+    expect(screen.getByText('Preparing your healthcare workspace')).toBeInTheDocument();
   });
 
   it('redirects unauthenticated requests to login with their return path', async () => {

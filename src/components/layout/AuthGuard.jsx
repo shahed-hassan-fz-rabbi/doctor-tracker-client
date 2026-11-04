@@ -3,9 +3,10 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useMe } from '@/hooks/useAuth';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AUTH_KEYS } from '@/hooks/useAuth';
+import BrandLoadingScreen from '@/components/ui/BrandLoadingScreen';
 
 /**
  * Client-side route protection. The JWT lives in an HttpOnly cookie owned
@@ -39,16 +40,7 @@ export default function AuthGuard({ children }) {
   // Public pages render directly (login page handles redirect-if-authed).
   if (isPublic) return children;
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-ivory text-ink">
-        <div className="flex items-center gap-3 font-display text-sm text-ink-soft">
-          <Loader2 className="h-5 w-5 animate-spin text-forest" />
-          Loading Doctor Tracker…
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <BrandLoadingScreen />;
 
   // While redirecting to login, render nothing to avoid flashing protected UI.
   if (isError && error?.status === 401) return null;
