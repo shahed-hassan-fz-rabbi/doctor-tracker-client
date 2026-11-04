@@ -39,12 +39,14 @@ describe('apiFetch', () => {
   });
 
   it('fails closed when demo API configuration is missing', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
     vi.stubEnv('NEXT_PUBLIC_APP_ENV', 'demo');
     vi.stubEnv('NEXT_PUBLIC_DEMO_API_URL', '');
     vi.resetModules();
     const { apiFetch: demoFetch } = await import('./api');
     await expect(demoFetch('/auth/me')).rejects.toThrow(/Demo API is not configured/);
-    expect(fetch).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('uses only the dedicated demo API base URL', async () => {
