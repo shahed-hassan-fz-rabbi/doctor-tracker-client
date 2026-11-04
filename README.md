@@ -58,8 +58,45 @@ src/styles/       Global styles and design tokens
 
 ## Deployment
 
-Deploy this repository to Vercel and set `NEXT_PUBLIC_API_URL` to the deployed Express API's `/api/v1` base URL. Configure the server's CORS allowlist for the exact frontend origin and its secure cookie settings for production. A live deployment has not been configured from this repository.
+Deploy this repository to Vercel.
+
+1. Import the repository and keep the framework preset **Next.js**.
+2. Set `NEXT_PUBLIC_API_URL` to the deployed Express API's `/api/v1` base URL, for example `https://doctor-tracker-api.onrender.com/api/v1`.
+3. Deploy, then copy the Vercel production origin (for example `https://doctor-tracker.vercel.app`) into the server's `CORS_ORIGINS`.
+4. In the Express service set `COOKIE_SECURE=true` and serve it over HTTPS so the HttpOnly session cookie is sent cross-site.
+
+Because the JWT is stored in an HttpOnly cookie owned by the API domain, route protection is verified in the browser through `/auth/me` (`AuthGuard`), not in Next.js middleware. Keep the API and client on HTTPS in production.
+
+No live deployment has been created from this repository.
+
 
 ## Visual evidence
 
-Desktop and mobile screenshots have not yet been captured. Add genuine screenshots here after running the app at both viewport sizes; no deployment URLs or screenshots are implied by this README.
+Screenshots were captured from the running app against the development API.
+
+### Desktop
+
+| Login | Dashboard |
+|---|---|
+| ![Login screen](docs/screenshots/login-desktop.png) | ![Dashboard](docs/screenshots/dashboard-desktop.png) |
+
+| Doctors | Patients |
+|---|---|
+| ![Doctors list](docs/screenshots/doctors-desktop.png) | ![Patients list](docs/screenshots/patients-desktop.png) |
+
+| Analytics | Doctor detail |
+|---|---|
+| ![Analytics](docs/screenshots/analytics-desktop.png) | ![Doctor detail](docs/screenshots/doctor-detail-desktop.png) |
+
+### Mobile (390 × 844)
+
+| Dashboard | Doctors | Patients |
+|---|---|---|
+| ![Mobile dashboard](docs/screenshots/dashboard-mobile.png) | ![Mobile doctors](docs/screenshots/doctors-mobile.png) | ![Mobile patients](docs/screenshots/patients-mobile.png) |
+
+### Not Found
+
+| Desktop | Mobile |
+|---|---|
+| ![Desktop 404](docs/screenshots/not-found-desktop.png) | ![Mobile 404](docs/screenshots/not-found-mobile.png) |
+
