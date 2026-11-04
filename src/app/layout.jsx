@@ -12,6 +12,10 @@ export const metadata = {
   },
   description:
     'A secure healthcare administration portal to manage doctors, their patients and operational analytics.',
+  icons: {
+    icon: '/images/doctors%20logo.png',
+    shortcut: '/images/doctors%20logo.png',
+  },
 };
 
 export const viewport = {

@@ -58,16 +58,20 @@ src/styles/       Global styles and design tokens
 
 ## Deployment
 
-Deploy this repository to Vercel.
+This repository is the Vercel project root; deploy the API separately as a Render Web Service (see the server repository README).
 
-1. Import the repository and keep the framework preset **Next.js**.
-2. Set `NEXT_PUBLIC_API_URL` to the deployed Express API's `/api/v1` base URL, for example `https://doctor-tracker-api.onrender.com/api/v1`.
-3. Deploy, then copy the Vercel production origin (for example `https://doctor-tracker.vercel.app`) into the server's `CORS_ORIGINS`.
-4. In the Express service set `COOKIE_SECURE=true` and serve it over HTTPS so the HttpOnly session cookie is sent cross-site.
+1. In Vercel, choose **Add New → Project**, import `shahed-hassan-fz-rabbi/doctor-tracker-client`, and select branch `main`.
+2. Set Framework Preset to **Next.js** and Root Directory to `.`. Use Install Command `npm ci` and Build Command `npm run build`; leave Output Directory at the Next.js default (do not override it).
+3. Add `NEXT_PUBLIC_API_URL` under **Environment Variables** for Production. Set it to the actual Render service URL followed by `/api/v1` (for example, `https://<your-render-service>.onrender.com/api/v1`). This URL is public; never put credentials or backend secrets in a `NEXT_PUBLIC_*` variable.
+4. Deploy. Copy the actual production origin shown by Vercel (scheme and hostname only; no path or trailing slash) into the backend's `CORS_ORIGINS` setting on Render.
+5. If you use Vercel Preview deployments, add `NEXT_PUBLIC_API_URL` for Preview as well and add the exact preview origin(s) to the API allow-list. Do not use `*` with credentialed CORS.
+6. After changing an environment variable, redeploy the affected service so the new build/runtime receives it.
+
+In Render, use `COOKIE_SECURE=true` and HTTPS. The API sets the session cookie `Secure; HttpOnly; SameSite=None` for the separate Vercel and Render sites. Browser privacy settings may still block cross-site cookies; verify login on the deployed domains. If blocked, use compatible custom domains under one site or an API proxy architecture rather than weakening cookie/CORS security.
 
 Because the JWT is stored in an HttpOnly cookie owned by the API domain, route protection is verified in the browser through `/auth/me` (`AuthGuard`), not in Next.js middleware. Keep the API and client on HTTPS in production.
 
-No live deployment has been created from this repository.
+No live deployment has been created from this repository. The example hostname above is a placeholder; use the domain Vercel actually assigns.
 
 
 ## Visual evidence
