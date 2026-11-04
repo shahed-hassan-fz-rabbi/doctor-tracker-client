@@ -111,7 +111,7 @@ export default function DashboardPage() {
               <h2 className="font-display text-lg font-bold text-ink">Patient registrations</h2>
               <p className="text-xs text-ink-soft">Monthly growth over the last {stats.monthlySeries.length || 6} months</p>
             </div>
-            <Badge tone="lime">{compactNumber(stats.newPatientsThisMonth)} this month</Badge>
+            <Badge tone="lime">{compactNumber(stats.newPatientsThisMonth)} in the last 30 days</Badge>
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
