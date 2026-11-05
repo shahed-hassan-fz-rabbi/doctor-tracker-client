@@ -3,21 +3,36 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Loader2, LogIn, Eye, EyeOff, AlertCircle, Copy, Check } from 'lucide-react';
+import {
+  Loader2,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  Copy,
+  Check,
+  Mail,
+  LockKeyhole,
+  Stethoscope,
+  UsersRound,
+  BarChart3,
+  ShieldCheck,
+  ArrowRight,
+  Sparkles,
+  HeartPulse,
+  Activity,
+} from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLogin, useMe } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/Toast';
-import { Input, Field } from '@/components/ui/Form';
-import Button from '@/components/ui/Button';
 import { safeNextPath } from '@/lib/navigation';
 import BrandMark from '@/components/ui/BrandMark';
 import { API_BASE, DEMO_AVAILABLE, DEMO_CREDENTIALS, IS_DEMO } from '@/lib/api';
 import { isDemoViewer } from '@/lib/demoAccess';
 
 const loginSchema = z.object({
-  email: z.string().trim().min(1, 'Email is required').email('Enter a valid email'),
+  email: z.string().trim().min(1, 'Email is required').email('Enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -31,6 +46,96 @@ const OAUTH_ERRORS = {
   oauth_failed: 'Google sign-in failed. Try again or use email login.',
 };
 
+/** Abstract medical dashboard preview card in the branding panel. */
+function ClinicalDashboardPreview() {
+  const bars = [38, 56, 44, 72, 60, 84, 68, 92, 76, 100];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="relative w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.05] p-5 shadow-[0_20px_50px_rgba(0,0,0,0.25)] backdrop-blur-md"
+    >
+      {/* Top window bar */}
+      <div className="flex items-center justify-between border-b border-white/10 pb-3">
+        <div className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+          <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+          <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+        </div>
+        <span className="flex items-center gap-1.5 rounded-full border border-lime/30 bg-lime/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-lime-soft">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime" />
+          CLINICAL OPERATIONS
+        </span>
+      </div>
+
+      {/* Metric Tiles */}
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="rounded-xl border border-white/10 bg-black/20 p-3.5 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-ivory/60">Active Doctors</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-lime/15 text-lime-soft">
+              <Stethoscope className="h-3.5 w-3.5" />
+            </span>
+          </div>
+          <p className="mt-2 font-display text-2xl font-extrabold tracking-tight text-white">40</p>
+          <span className="mt-0.5 inline-block text-[10px] font-medium text-lime-soft">10 Specializations</span>
+        </div>
+
+        <div className="rounded-xl border border-white/10 bg-black/20 p-3.5 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-ivory/60">Patient Records</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-lime/15 text-lime-soft">
+              <UsersRound className="h-3.5 w-3.5" />
+            </span>
+          </div>
+          <p className="mt-2 font-display text-2xl font-extrabold tracking-tight text-white">260</p>
+          <span className="mt-0.5 inline-block text-[10px] font-medium text-ivory/50">72% Assigned Active</span>
+        </div>
+      </div>
+
+      {/* Intake Activity Chart */}
+      <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3.5">
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="font-semibold text-ivory/70">Weekly Patient Intake</span>
+          <span className="flex items-center gap-1 text-[10px] font-bold text-lime-soft">
+            <Activity className="h-3 w-3" />
+            +18% Velocity
+          </span>
+        </div>
+        <div className="mt-3 flex h-14 items-end gap-1.5">
+          {bars.map((height, index) => (
+            <span
+              key={index}
+              style={{ height: `${height}%` }}
+              className={`min-w-0 flex-1 rounded-t-[3px] transition-all duration-300 ${
+                index === bars.length - 1 ? 'bg-lime shadow-[0_0_12px_rgba(199,244,100,0.5)]' : 'bg-lime/30'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const FEATURE_HIGHLIGHTS = [
+  {
+    icon: Stethoscope,
+    title: 'Doctors Management',
+    desc: 'Profile directories, schedules & rosters',
+  },
+  {
+    icon: UsersRound,
+    title: 'Patient Records',
+    desc: 'Triage intake, diagnoses & assignments',
+  },
+  {
+    icon: BarChart3,
+    title: 'Smart Analytics',
+    desc: 'Caseload balance & department trends',
+  },
+];
+
 function LoginContent() {
   const router = useRouter();
   const params = useSearchParams();
@@ -39,9 +144,12 @@ function LoginContent() {
 
   const login = useLogin();
   const toast = useToast();
+
   const [showPassword, setShowPassword] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [copied, setCopied] = useState('');
+
+  const demoReady = Boolean(DEMO_AVAILABLE && DEMO_CREDENTIALS?.email && DEMO_CREDENTIALS?.password);
 
   const {
     register,
@@ -63,225 +171,354 @@ function LoginContent() {
       toast.success('Welcome back to Doctor Tracker.');
       router.replace(next);
     } catch (err) {
-      toast.error(err?.message || 'Login failed. Try again.');
+      toast.error(err?.message || 'Login failed. Please check your credentials.');
     }
   }
 
-  /**
-   * Google Sign-In initiates a server-side redirect.
-   * The browser navigates away to the backend /auth/google endpoint which
-   * redirects to Google's consent screen. No tokens pass through the frontend.
-   */
   function handleGoogleLogin() {
     if (IS_DEMO) return;
     setGoogleLoading(true);
-    // Full-page navigation — not a fetch. The backend handles everything.
     window.location.href = `${API_BASE}/auth/google`;
   }
 
-  return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      {/* Left: brand panel */}
-      <div className="relative hidden overflow-hidden bg-forest lg:flex lg:flex-col lg:justify-between">
-        <div className="pointer-events-none absolute -left-24 top-24 h-80 w-80 rounded-full bg-lime/10 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 bottom-10 h-72 w-72 rounded-full bg-lime-soft/10 blur-3xl" />
-        <div className="pointer-events-none absolute right-24 top-1/3 h-40 w-40 rotate-12 rounded-3xl border border-lime/20" />
+  async function handleCopy(label, value) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(label);
+      setTimeout(() => setCopied(''), 1800);
+    } catch {
+      /* clipboard write rejected */
+    }
+  }
 
-        <div className="relative p-10">
-          <div className="flex items-center gap-3">
-            <BrandMark size={44} priority className="shadow-[0_4px_16px_rgba(201,244,90,0.4)]" />
-            <span className="font-display text-lg font-bold text-white">Doctor Tracker</span>
+  function handleDemoFill() {
+    if (!demoReady) return;
+    setValue('email', DEMO_CREDENTIALS.email, { shouldValidate: true });
+    setValue('password', DEMO_CREDENTIALS.password, { shouldValidate: true });
+    document.getElementById('login-email')?.focus();
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col bg-ivory lg:grid lg:grid-cols-2">
+      {/* ============================== Left: Premium Branding Section ============================== */}
+      <aside className="relative hidden overflow-hidden bg-forest lg:flex lg:flex-col lg:justify-between p-10 xl:p-14 text-white">
+        {/* Ambient background glows & abstract geometric contours */}
+        <div className="pointer-events-none absolute -left-20 -top-20 h-96 w-96 rounded-full bg-lime/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 -right-20 h-96 w-96 rounded-full bg-lime/10 blur-3xl" />
+        <div className="pointer-events-none absolute right-16 top-1/4 h-64 w-64 rounded-full border border-white/5" />
+        <div className="pointer-events-none absolute left-1/3 bottom-1/4 h-48 w-48 rounded-full border border-lime/10" />
+
+        {/* Brand Header */}
+        <div className="relative z-10 flex items-center gap-3.5">
+          <BrandMark size={44} priority className="shadow-[0_4px_20px_rgba(199,244,100,0.35)]" />
+          <div>
+            <span className="block font-display text-xl font-extrabold tracking-tight text-white leading-tight">
+              Doctor Tracker
+            </span>
+            <span className="block text-[11px] font-semibold tracking-wider text-ivory/60 uppercase">
+              Healthcare Administration Platform
+            </span>
           </div>
         </div>
 
-        <div className="relative p-10">
-          <h2 className="font-display text-4xl font-bold leading-tight text-white">
-            One place for every
-            <span className="text-lime"> doctor and patient</span> record.
-          </h2>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-ivory/70">
-            Register doctors, track each patient's assigned specialist and read operational
-            analytics — all behind a secure, role-protected portal.
-          </p>
+        {/* Hero Section & Interactive Graphic */}
+        <div className="relative z-10 my-auto py-8 space-y-7">
+          <ClinicalDashboardPreview />
 
-          <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
-            {[
-              ['Doctors', 'Register & filter'],
-              ['Patients', 'Assign & track'],
-              ['Analytics', 'Live dashboards'],
-            ].map(([title, sub]) => (
-              <div key={title} className="rounded-xl border border-forest-600 bg-forest-800/80 p-3">
-                <p className="font-display text-sm font-semibold text-lime-soft">{title}</p>
-                <p className="mt-0.5 text-[11px] text-ivory/60">{sub}</p>
+          <div className="space-y-3">
+            <h1 className="font-display text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-[1.2]">
+              One place for every <span className="text-lime">doctor and patient</span> record.
+            </h1>
+            <p className="max-w-md text-sm leading-relaxed text-ivory/70">
+              Manage doctor profiles, organize patient records, and understand your healthcare operations through one secure platform.
+            </p>
+          </div>
+
+          {/* Three Compact Feature Highlights */}
+          <div className="grid max-w-md grid-cols-3 gap-3 pt-1">
+            {FEATURE_HIGHLIGHTS.map(({ icon: Icon, title, desc }) => (
+              <div
+                key={title}
+                className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5 transition hover:bg-white/[0.08]"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-lime/15 text-lime-soft">
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <p className="mt-2.5 font-display text-xs font-bold text-white leading-snug">{title}</p>
+                <p className="mt-1 text-[10px] leading-snug text-ivory/55">{desc}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
 
-      {/* Right: form */}
-      <div className="flex items-center justify-center bg-ivory px-4 py-12">
+        {/* Bottom Trust & Compliance Footer */}
+        <div className="relative z-10 border-t border-white/10 pt-4">
+          <div className="flex items-center gap-2 text-xs text-ivory/55">
+            <ShieldCheck className="h-4 w-4 text-lime-soft shrink-0" aria-hidden="true" />
+            <span>Role-protected access · 256-bit encryption · Secure HttpOnly sessions</span>
+          </div>
+        </div>
+      </aside>
+
+      {/* ============================== Right: Authentication Section ============================== */}
+      <main className="relative flex flex-1 items-center justify-center px-4 py-12 sm:px-8 sm:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="w-full max-w-md"
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="w-full max-w-[440px] space-y-6"
         >
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <BrandMark size={40} priority />
-            <span className="font-display text-base font-bold text-ink">Doctor Tracker</span>
+          {/* Mobile brand header (shown on smaller viewports) */}
+          <div className="flex items-center gap-3 lg:hidden">
+            <BrandMark size={40} priority className="shadow-soft" />
+            <div>
+              <span className="block font-display text-lg font-bold text-ink">Doctor Tracker</span>
+              <span className="block text-[11px] font-medium text-ink-soft">Healthcare Administration</span>
+            </div>
           </div>
 
-          <h1 className="font-display text-2xl font-bold text-ink sm:text-3xl">Sign in</h1>
-          <p className="mt-2 text-sm text-ink-soft">{IS_DEMO ? 'Explore Doctor Tracker using a restricted, read-only demo account.' : 'Sign in with Google or your administrator credentials.'}</p>
-
-          {/* OAuth error banner */}
-          {oauthError && (
-            <div className="mt-4 flex items-start gap-3 rounded-xl border border-danger/30 bg-danger/5 p-4">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
-              <p className="text-sm text-danger">
-                {OAUTH_ERRORS[oauthError] || OAUTH_ERRORS.oauth_failed}
+          {/* Authentication Card */}
+          <section
+            aria-label="Account sign-in"
+            className="rounded-2xl border border-line bg-white p-7 sm:p-9 shadow-[0_20px_50px_rgba(16,33,15,0.06)]"
+          >
+            <div>
+              <h2 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
+                Welcome back
+              </h2>
+              <p className="mt-1.5 text-sm text-ink-soft">
+                {IS_DEMO
+                  ? 'Explore Doctor Tracker using a restricted, read-only demo account.'
+                  : 'Sign in to your Doctor Tracker account.'}
               </p>
             </div>
-          )}
 
-          {/* Google Sign-In */}
-          {!IS_DEMO && <div className="mt-6">
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              disabled={googleLoading || login.isPending}
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-line bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm transition-all hover:bg-ivory hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {googleLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                /* Google "G" SVG logo */
-                <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-                  <path fill="none" d="M0 0h48v48H0z" />
-                </svg>
-              )}
-              {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
-            </button>
-          </div>}
+            {/* OAuth Callback Error Alert */}
+            {oauthError && (
+              <div
+                role="alert"
+                className="mt-5 flex items-start gap-3 rounded-xl border border-danger/25 bg-danger/5 p-3.5"
+              >
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" aria-hidden="true" />
+                <p className="text-xs leading-5 text-danger font-medium">
+                  {OAUTH_ERRORS[oauthError] || OAUTH_ERRORS.oauth_failed}
+                </p>
+              </div>
+            )}
 
-          {/* Divider */}
-          {!IS_DEMO && <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-line" />
-            </div>
-            <div className="relative flex justify-center text-xs text-ink-soft">
-              <span className="bg-ivory px-3">or sign in with admin credentials</span>
-            </div>
-          </div>}
-
-          {/* Email / Password form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <Field label="Email" error={errors.email}>
-              <Input
-                type="email"
-                disabled={IS_DEMO && !DEMO_AVAILABLE}
-                autoComplete="email"
-                placeholder={IS_DEMO ? 'demo@example.com' : 'admin@example.com'}
-                error={errors.email}
-                {...register('email')}
-              />
-            </Field>
-
-            <Field label="Password" error={errors.password}>
-              <div className="relative">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  disabled={IS_DEMO && !DEMO_AVAILABLE}
-                  autoComplete="current-password"
-                  placeholder="••••••••••"
-                  error={errors.password}
-                  className="pr-10"
-                  {...register('password')}
-                />
+            {/* Google OAuth Button */}
+            {!IS_DEMO && (
+              <>
                 <button
                   type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-ink-soft hover:text-ink cursor-pointer"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={handleGoogleLogin}
+                  disabled={googleLoading || login.isPending}
+                  className="mt-6 flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink shadow-sm transition-all hover:bg-ivory/70 hover:border-forest/30 hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {googleLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-forest" aria-hidden="true" />
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                      <path fill="none" d="M0 0h48v48H0z" />
+                    </svg>
+                  )}
+                  <span>{googleLoading ? 'Connecting to Google…' : 'Continue with Google'}</span>
                 </button>
-              </div>
-            </Field>
 
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full"
-              loading={login.isPending}
-              disabled={googleLoading || (IS_DEMO && !DEMO_AVAILABLE)}
-            >
-              {!login.isPending && <LogIn className="h-4 w-4" />}
-              {login.isPending ? 'Signing in…' : 'Sign in'}
-            </Button>
-          </form>
+                {/* Styled Divider */}
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-line" />
+                  </div>
+                  <div className="relative flex justify-center text-[10px] font-bold text-ink-soft/80">
+                    <span className="bg-white px-3 tracking-[0.16em] uppercase">OR CONTINUE WITH EMAIL</span>
+                  </div>
+                </div>
+              </>
+            )}
 
-          {IS_DEMO ? (
-            <section aria-label="Demo credentials" className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
-              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h2 className="font-display text-base font-bold text-ink">Try the Demo Account</h2>
-                  <p className="mt-1 text-xs text-ink-soft">Explore Doctor Tracker using sample data. Changes are disabled.</p>
+            {/* Email & Password Form */}
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+              {/* Email Input */}
+              <div className="space-y-1.5">
+                <label htmlFor="login-email" className="block text-xs font-bold text-ink font-display">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft/70"
+                    aria-hidden="true"
+                  />
+                  <input
+                    id="login-email"
+                    type="email"
+                    disabled={IS_DEMO && !DEMO_AVAILABLE}
+                    autoComplete="email"
+                    placeholder={IS_DEMO ? 'demo@doctortracker.com' : 'admin@doctortracker.com'}
+                    aria-invalid={Boolean(errors.email)}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
+                    className={`h-12 w-full rounded-xl border bg-white pl-10 pr-3 text-sm text-ink placeholder:text-ink-soft/50 outline-none transition focus:border-forest focus:ring-2 focus:ring-forest/15 disabled:bg-ivory/50 disabled:cursor-not-allowed ${
+                      errors.email ? 'border-danger focus:ring-danger/25' : 'border-line'
+                    }`}
+                    {...register('email')}
+                  />
                 </div>
-                <div className="flex gap-2">
-                  <span className="rounded-full bg-lime/25 px-2.5 py-1 text-[10px] font-bold tracking-wide text-forest">DEMO ACCOUNT</span>
-                  <span className="rounded-full bg-ivory px-2.5 py-1 text-[10px] font-bold tracking-wide text-ink-soft">READ ONLY</span>
-                </div>
+                {errors.email && (
+                  <p id="email-error" className="text-xs font-medium text-danger flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
-              {DEMO_AVAILABLE && DEMO_CREDENTIALS?.email && DEMO_CREDENTIALS?.password ? (
-                <div className="space-y-3">
-                  {[["Demo Email", DEMO_CREDENTIALS.email, 'email'], ["Demo Password", DEMO_CREDENTIALS.password, 'password']].map(([label, value, key]) => (
-                    <div key={key}>
-                      <p className="mb-1 text-xs font-semibold text-ink-soft">{label}</p>
-                      <div className="flex min-w-0 items-center gap-2 rounded-lg border border-line bg-ivory/60 p-2">
-                        <code className="min-w-0 flex-1 break-all text-xs text-ink">{value}</code>
-                        <button type="button" onClick={async () => { await navigator.clipboard.writeText(value); setCopied(key); setTimeout(() => setCopied(''), 1600); }} className="inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-forest hover:bg-lime/20" aria-label={`Copy ${label}`}>
-                          {copied === key ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}{copied === key ? 'Copied' : 'Copy'}
+
+              {/* Password Input */}
+              <div className="space-y-1.5">
+                <label htmlFor="login-password" className="block text-xs font-bold text-ink font-display">
+                  Password
+                </label>
+                <div className="relative">
+                  <LockKeyhole
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft/70"
+                    aria-hidden="true"
+                  />
+                  <input
+                    id="login-password"
+                    type={showPassword ? 'text' : 'password'}
+                    disabled={IS_DEMO && !DEMO_AVAILABLE}
+                    autoComplete="current-password"
+                    placeholder="••••••••••••"
+                    aria-invalid={Boolean(errors.password)}
+                    aria-describedby={errors.password ? 'password-error' : undefined}
+                    className={`h-12 w-full rounded-xl border bg-white pl-10 pr-11 text-sm text-ink placeholder:text-ink-soft/50 outline-none transition focus:border-forest focus:ring-2 focus:ring-forest/15 disabled:bg-ivory/50 disabled:cursor-not-allowed ${
+                      errors.password ? 'border-danger focus:ring-danger/25' : 'border-line'
+                    }`}
+                    {...register('password')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-ink-soft transition hover:bg-ivory hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest cursor-pointer"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-pressed={showPassword}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" aria-hidden="true" />
+                    ) : (
+                      <Eye className="h-4 w-4" aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p id="password-error" className="text-xs font-medium text-danger flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Sign In Button */}
+              <button
+                type="submit"
+                disabled={login.isPending || googleLoading || (IS_DEMO && !DEMO_AVAILABLE)}
+                className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-forest px-4 text-sm font-bold text-white shadow-md transition-all hover:bg-forest/90 hover:shadow-lg active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+              >
+                {login.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin text-white" aria-hidden="true" />
+                    <span>Signing in…</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <ArrowRight className="h-4 w-4 text-lime" aria-hidden="true" />
+                  </>
+                )}
+              </button>
+            </form>
+          </section>
+
+          {/* ============================== Demo Account Card ============================== */}
+          <section
+            aria-label="Demo credentials and preview"
+            className="rounded-2xl border border-line bg-white p-5 sm:p-6 shadow-sm transition hover:shadow-md"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-forest" aria-hidden="true" />
+                <h3 className="font-display text-sm font-bold text-ink">Try Demo Account</h3>
+              </div>
+              <div className="flex shrink-0 gap-1.5">
+                <span className="rounded-full border border-lime/30 bg-lime/20 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-forest">
+                  DEMO ACCOUNT
+                </span>
+                <span className="rounded-full border border-line bg-ivory px-2 py-0.5 text-[10px] font-bold tracking-wide text-ink-soft">
+                  READ ONLY
+                </span>
+              </div>
+            </div>
+
+            <p className="mt-2 text-xs leading-relaxed text-ink-soft">
+              Explore the application using sample healthcare data. Changes are disabled in demo mode.
+            </p>
+
+            {demoReady ? (
+              <div className="mt-4 space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {[
+                    ['Demo Email', DEMO_CREDENTIALS.email],
+                    ['Demo Password', DEMO_CREDENTIALS.password],
+                  ].map(([label, value]) => (
+                    <div key={label} className="rounded-xl border border-line bg-ivory/60 p-2.5">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-ink-soft">{label}</p>
+                      <div className="mt-1 flex items-center justify-between gap-1">
+                        <code className="text-xs font-semibold text-ink truncate">{value}</code>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(label, value)}
+                          className="rounded-md p-1 text-ink-soft transition hover:bg-white hover:text-forest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest cursor-pointer shrink-0"
+                          aria-label={`Copy ${label}`}
+                        >
+                          {copied === label ? (
+                            <Check className="h-3.5 w-3.5 text-forest" aria-hidden="true" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                          )}
                         </button>
                       </div>
                     </div>
                   ))}
-                  <Button type="button" className="w-full" onClick={() => { setValue('email', DEMO_CREDENTIALS.email, { shouldValidate: true }); setValue('password', DEMO_CREDENTIALS.password, { shouldValidate: true }); }}>
-                    Try Demo Account
-                  </Button>
                 </div>
-              ) : (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-ivory/60 p-3">
-                  <span role="status" className="text-xs font-bold tracking-wide text-ink-soft">DEMO COMING SOON</span>
-                  <Button type="button" className="w-full sm:w-auto" disabled>Try Demo Account</Button>
-                </div>
-              )}
-            </section>
-          ) : (
-            <section aria-label="Demo account" className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card">
-              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h2 className="font-display text-base font-bold text-ink">Try the Demo Account</h2>
-                  <p className="mt-1 text-xs text-ink-soft">Explore Doctor Tracker using sample data. Changes are disabled.</p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="rounded-full bg-lime/25 px-2.5 py-1 text-[10px] font-bold tracking-wide text-forest">DEMO ACCOUNT</span>
-                  <span className="rounded-full bg-ivory px-2.5 py-1 text-[10px] font-bold tracking-wide text-ink-soft">READ ONLY</span>
-                </div>
+
+                <button
+                  type="button"
+                  onClick={handleDemoFill}
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-forest/20 bg-forest/5 px-4 text-xs font-bold text-forest transition hover:bg-forest hover:text-white hover:border-forest active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest cursor-pointer"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-forest group-hover:text-lime" aria-hidden="true" />
+                  <span>Autofill Demo Credentials</span>
+                </button>
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-ivory/60 p-3">
-                <span role="status" className="text-xs font-bold tracking-wide text-ink-soft">DEMO COMING SOON</span>
-                <Button type="button" className="w-full sm:w-auto" disabled>Try Demo Account</Button>
+            ) : (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-line bg-ivory/60 p-3.5">
+                <span role="status" className="text-[11px] font-bold tracking-wider text-ink-soft uppercase">
+                  DEMO COMING SOON
+                </span>
+                <button
+                  type="button"
+                  disabled
+                  className="h-10 w-full sm:w-auto rounded-xl border border-line bg-ivory px-4 text-xs font-bold text-ink-soft/60 cursor-not-allowed opacity-60"
+                >
+                  Try Demo Account
+                </button>
               </div>
-            </section>
-          )}
+            )}
+          </section>
         </motion.div>
-      </div>
+      </main>
     </div>
   );
 }
@@ -293,6 +530,7 @@ function SuspenseWrapper({ children }) {
 export default function LoginPage() {
   const router = useRouter();
   const { data, isSuccess } = useMe();
+
   useEffect(() => {
     if (isSuccess && data?.data?.user) {
       const user = data.data.user;
