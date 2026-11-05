@@ -3,10 +3,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import AuthGuard from './AuthGuard';
 
-const { useMeMock, replaceMock } = vi.hoisted(() => ({ useMeMock: vi.fn(), replaceMock: vi.fn() }));
+const { useMeMock, replaceMock, pathnameMock } = vi.hoisted(() => ({
+  useMeMock: vi.fn(),
+  replaceMock: vi.fn(),
+  pathnameMock: vi.fn(),
+}));
 
 vi.mock('next/navigation', () => ({
-  usePathname: () => '/dashboard',
+  usePathname: pathnameMock,
   useRouter: () => ({ replace: replaceMock }),
 }));
 vi.mock('@/hooks/useAuth', () => ({
@@ -14,7 +18,8 @@ vi.mock('@/hooks/useAuth', () => ({
   useMe: useMeMock,
 }));
 
-function renderGuard() {
+function renderGuard(pathname = '/dashboard') {
+  pathnameMock.mockReturnValue(pathname);
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
@@ -26,9 +31,19 @@ function renderGuard() {
 afterEach(() => {
   useMeMock.mockReset();
   replaceMock.mockReset();
+  pathnameMock.mockReset();
 });
 
 describe('AuthGuard', () => {
+  it('renders the public homepage without enabling the protected session request', () => {
+    useMeMock.mockReturnValue({ isLoading: true, isError: false });
+    renderGuard('/');
+
+    expect(screen.getByText('Protected dashboard')).toBeInTheDocument();
+    expect(useMeMock).toHaveBeenCalledWith({ enabled: false });
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
   it('shows a temporary loading state while checking the session', () => {
     useMeMock.mockReturnValue({ isLoading: true, isError: false });
     renderGuard();

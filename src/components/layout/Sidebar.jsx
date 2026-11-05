@@ -50,7 +50,7 @@ export default function Sidebar({ open, onClose, user }) {
     <div className="flex h-full flex-col">
       {/* Brand */}
       <div className="flex items-center gap-3 px-5 py-6">
-        <Link href="/dashboard" className="flex items-center gap-3" onClick={onClose}>
+        <Link href="/" aria-label="Doctor Tracker home" className="flex items-center gap-3" onClick={onClose}>
           <BrandMark size={40} className="shadow-[0_4px_12px_rgba(201,244,90,0.35)]" />
           <span>
             <span className="block font-display text-base font-bold text-white leading-tight">

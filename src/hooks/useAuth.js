@@ -6,10 +6,11 @@ export const AUTH_KEYS = {
 };
 
 /** Logged-in admin profile; drives the auth guard + sidebar identity. */
-export function useMe() {
+export function useMe({ enabled = true } = {}) {
   return useQuery({
     queryKey: AUTH_KEYS.me,
     queryFn: () => apiFetch('/auth/me'),
+    enabled,
     retry: false,
     staleTime: 5 * 60 * 1000,
   });

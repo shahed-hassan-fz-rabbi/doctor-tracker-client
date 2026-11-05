@@ -20,10 +20,10 @@ export default function AuthGuard({ children }) {
   const pathname = usePathname() || '';
   const router = useRouter();
   const queryClient = useQueryClient();
-  const isPublic = PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
+  const isPublic = pathname === '/' || PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
   const isWriteRoute = /\/(new|edit)(\/|$)/.test(pathname);
 
-  const { isLoading, isError, error, refetch, isFetching } = useMe();
+  const { isLoading, isError, error, refetch, isFetching } = useMe({ enabled: !isPublic });
 
   useEffect(() => {
     const refreshSession = () => {
