@@ -161,7 +161,7 @@ sequenceDiagram
         User->>Auth: Consents & Authenticates
         Auth-->>API: Redirects to /api/v1/auth/google/callback?code=...
         API->>Auth: Exchanges token & persists/updates user
-        API-->>Browser: Redirects to /auth/callback with HttpOnly JWT Cookie
+        API-->>Browser: Redirects to /dashboard (or /login?error=… on failure) with HttpOnly JWT Cookie
     else Email / Password Flow
         Browser->>API: POST /api/v1/auth/login { email, password }
         API->>API: Validates password hash via bcrypt
@@ -184,10 +184,10 @@ For reviewers, evaluators, and portfolio demonstration:
 - **Demo Credentials:**
   - **Email:** `demo@doctortracker.com`
   - **Password:** `Demo@123`
-- A single-click **"Fill Demo Credentials"** button on `/login` automatically populates these inputs.
-- When built with `NEXT_PUBLIC_APP_ENV=demo`, the client displays a persistent top banner:
-  > *"Demo Mode — You can explore all features, but changes are disabled."*
-- Write buttons ("Add Doctor", "Add Patient", "Delete", "Edit") are either visually hidden or replaced with informational tooltips.
+- A single-click **"Try Demo Account"** button on `/login` automatically populates these inputs (with per-field copy buttons).
+- When built with `NEXT_PUBLIC_APP_ENV=demo`, the client displays a persistent sidebar badge:
+  > `DEMO · READ ONLY`
+- Write routes (`/new`, `/edit`) are blocked client-side by `AuthGuard`; they would independently return `403` from the API.
 
 ---
 
@@ -261,20 +261,23 @@ doctor-tracker-client/
 │   │   │   ├── restricted/   # Viewer account awaiting role elevation
 │   │   │   └── settings/     # Clinic settings & preferences
 │   │   ├── auth/
-│   │   │   └── callback/     # Google OAuth redirect handler
+│   │   │   └── callback/     # Google OAuth redirect landing page (errors)
 │   │   ├── login/            # Authentication page with demo autofill
 │   │   ├── layout.jsx        # Root application layout
 │   │   ├── not-found.jsx     # Friendly 404 page
-│   │   └── page.jsx          # Root redirector to /dashboard
+│   │   └── page.jsx          # Public marketing/landing page
 │   ├── components/
 │   │   ├── layout/           # Sidebar, Topbar, AuthGuard, Layouts
+│   │   ├── public/           # Public landing page navbar & footer
 │   │   └── ui/               # Cards, Buttons, Tables, Badges, Toast
 │   ├── features/
 │   │   ├── doctors/          # Doctor schemas and form helpers
 │   │   └── patients/         # Patient schemas and form helpers
 │   ├── hooks/                # Custom React Query hooks (useAuth, useDoctors, etc.)
 │   ├── lib/                  # apiFetch wrapper, demoAccess policy, utility functions
+│   ├── providers/            # App-wide providers (React Query, Toast)
 │   └── styles/               # Global CSS & Tailwind imports
+├── src/middleware.js         # Edge middleware (homepage passthrough)
 ├── vitest.config.mjs         # Test runner configuration
 └── package.json
 ```
