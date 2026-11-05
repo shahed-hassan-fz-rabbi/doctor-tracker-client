@@ -18,7 +18,6 @@ import {
   ShieldCheck,
   ArrowRight,
   Sparkles,
-  HeartPulse,
   Activity,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -149,7 +148,9 @@ function LoginContent() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [copied, setCopied] = useState('');
 
-  const demoReady = Boolean(DEMO_AVAILABLE && DEMO_CREDENTIALS?.email && DEMO_CREDENTIALS?.password);
+  // Default to the configured production admin credentials if dedicated demo is not set
+  const demoEmail = DEMO_CREDENTIALS?.email || 'admin@gmail.com';
+  const demoPassword = DEMO_CREDENTIALS?.password || 'admin123';
 
   const {
     register,
@@ -192,9 +193,8 @@ function LoginContent() {
   }
 
   function handleDemoFill() {
-    if (!demoReady) return;
-    setValue('email', DEMO_CREDENTIALS.email, { shouldValidate: true });
-    setValue('password', DEMO_CREDENTIALS.password, { shouldValidate: true });
+    setValue('email', demoEmail, { shouldValidate: true });
+    setValue('password', demoPassword, { shouldValidate: true });
     document.getElementById('login-email')?.focus();
   }
 
@@ -358,7 +358,7 @@ function LoginContent() {
                     type="email"
                     disabled={IS_DEMO && !DEMO_AVAILABLE}
                     autoComplete="email"
-                    placeholder={IS_DEMO ? 'demo@doctortracker.com' : 'admin@doctortracker.com'}
+                    placeholder="admin@gmail.com"
                     aria-invalid={Boolean(errors.email)}
                     aria-describedby={errors.email ? 'email-error' : undefined}
                     className={`h-12 w-full rounded-xl border bg-white pl-10 pr-3 text-sm text-ink placeholder:text-ink-soft/50 outline-none transition focus:border-forest focus:ring-2 focus:ring-forest/15 disabled:bg-ivory/50 disabled:cursor-not-allowed ${
@@ -444,78 +444,78 @@ function LoginContent() {
           {/* ============================== Demo Account Card ============================== */}
           <section
             aria-label="Demo credentials and preview"
-            className="rounded-2xl border border-line bg-white p-5 sm:p-6 shadow-sm transition hover:shadow-md"
+            className="rounded-2xl border border-line bg-white p-5 sm:p-6 shadow-sm transition-all duration-200 hover:shadow-md"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-forest" aria-hidden="true" />
-                <h3 className="font-display text-sm font-bold text-ink">Try Demo Account</h3>
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-lime/20 text-forest">
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="font-display text-sm font-bold text-ink">Demo Account</h3>
+                  <p className="text-[11px] text-ink-soft">Test access with pre-populated records</p>
+                </div>
               </div>
               <div className="flex shrink-0 gap-1.5">
-                <span className="rounded-full border border-lime/30 bg-lime/20 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-forest">
+                <span className="rounded-full border border-forest/15 bg-forest/5 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-forest uppercase">
                   DEMO ACCOUNT
                 </span>
-                <span className="rounded-full border border-line bg-ivory px-2 py-0.5 text-[10px] font-bold tracking-wide text-ink-soft">
+                <span className="rounded-full border border-line bg-ivory px-2 py-0.5 text-[10px] font-bold tracking-wide text-ink-soft uppercase">
                   READ ONLY
                 </span>
               </div>
             </div>
 
-            <p className="mt-2 text-xs leading-relaxed text-ink-soft">
-              Explore the application using sample healthcare data. Changes are disabled in demo mode.
-            </p>
+            {/* Quick credentials banner */}
+            <div className="mt-3.5 flex items-center justify-between rounded-xl border border-line/80 bg-ivory/70 px-3.5 py-2">
+              <span
+                role="status"
+                className="font-mono text-[11px] font-bold tracking-wide text-forest/90 uppercase select-all"
+              >
+                DEMO : Email : {demoEmail} | Password : {demoPassword}
+              </span>
+            </div>
 
-            {demoReady ? (
-              <div className="mt-4 space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {[
-                    ['Demo Email', DEMO_CREDENTIALS.email],
-                    ['Demo Password', DEMO_CREDENTIALS.password],
-                  ].map(([label, value]) => (
-                    <div key={label} className="rounded-xl border border-line bg-ivory/60 p-2.5">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-ink-soft">{label}</p>
-                      <div className="mt-1 flex items-center justify-between gap-1">
-                        <code className="text-xs font-semibold text-ink truncate">{value}</code>
-                        <button
-                          type="button"
-                          onClick={() => handleCopy(label, value)}
-                          className="rounded-md p-1 text-ink-soft transition hover:bg-white hover:text-forest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest cursor-pointer shrink-0"
-                          aria-label={`Copy ${label}`}
-                        >
-                          {copied === label ? (
-                            <Check className="h-3.5 w-3.5 text-forest" aria-hidden="true" />
-                          ) : (
-                            <Copy className="h-3.5 w-3.5" aria-hidden="true" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+            {/* Interactive credential pills with instant one-click copy */}
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {[
+                { label: 'Demo Email', value: demoEmail },
+                { label: 'Demo Password', value: demoPassword },
+              ].map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="group relative flex items-center justify-between rounded-xl border border-line/70 bg-white p-2.5 transition-all hover:border-forest/30 hover:bg-ivory/30 shadow-2xs"
+                >
+                  <div className="min-w-0 pr-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-ink-soft/80">{label}</p>
+                    <code className="block truncate font-mono text-xs font-semibold text-ink">{value}</code>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(label, value)}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line/60 bg-ivory text-ink-soft transition-all hover:border-forest/40 hover:bg-white hover:text-forest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest cursor-pointer"
+                    aria-label={`Copy ${label}`}
+                    title={`Copy ${label}`}
+                  >
+                    {copied === label ? (
+                      <Check className="h-3.5 w-3.5 text-forest" aria-hidden="true" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                    )}
+                  </button>
                 </div>
+              ))}
+            </div>
 
-                <button
-                  type="button"
-                  onClick={handleDemoFill}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-forest/20 bg-forest/5 px-4 text-xs font-bold text-forest transition hover:bg-forest hover:text-white hover:border-forest active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest cursor-pointer"
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-forest group-hover:text-lime" aria-hidden="true" />
-                  <span>Autofill Demo Credentials</span>
-                </button>
-              </div>
-            ) : (
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-line bg-ivory/60 p-3.5">
-                <span role="status" className="text-[11px] font-bold tracking-wider text-ink-soft uppercase">
-                  DEMO COMING SOON
-                </span>
-                <button
-                  type="button"
-                  disabled
-                  className="h-10 w-full sm:w-auto rounded-xl border border-line bg-ivory px-4 text-xs font-bold text-ink-soft/60 cursor-not-allowed opacity-60"
-                >
-                  Try Demo Account
-                </button>
-              </div>
-            )}
+            {/* One-click Autofill Button */}
+            <button
+              type="button"
+              onClick={handleDemoFill}
+              className="mt-3.5 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-forest/20 bg-forest/5 px-4 text-xs font-bold text-forest transition-all duration-150 hover:bg-forest hover:text-white hover:border-forest hover:shadow-sm active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest cursor-pointer"
+            >
+              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>Autofill Demo Credentials</span>
+            </button>
           </section>
         </motion.div>
       </main>
