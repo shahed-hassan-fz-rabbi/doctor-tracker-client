@@ -27,6 +27,14 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${manrope.variable}`}>
+      <head>
+        {/* restore the landing-page theme before first paint to avoid a light flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{if(localStorage.getItem('dt-landing-theme')==='dark')document.documentElement.classList.add('scheme-dark')}catch(e){}",
+          }}
+        />
+      </head>
       <body className="bg-ivory text-ink antialiased">
         <Providers>{children}</Providers>
       </body>

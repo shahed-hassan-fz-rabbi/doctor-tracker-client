@@ -377,7 +377,7 @@ The client is configured for seamless deployment to **Vercel**:
 - [ ] **Prescription & Medical Notes History:** Enable doctors to append timestamped consultation notes to patient profiles.
 - [ ] **Role Management Dashboard:** An admin panel to promote Google OAuth viewers to full administrators.
 - [ ] **CSV / PDF Export:** One-click data export for patient records, roster listings, and monthly analytics reports.
-- [ ] **Dark Mode Theme:** Complement the current clean ivory palette with an eye-friendly dark mode.
+- [x] **Dark Mode Theme (public landing):** A light/night toggle on the landing-page navbar; the dashboard keeps its fixed ivory/forest theme.
 
 ---
 

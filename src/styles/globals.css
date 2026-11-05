@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* class-scoped dark variant: only applies while html carries .scheme-dark
+   (set by the public landing page's ThemeToggle) */
+@custom-variant dark (&:where(.scheme-dark, .scheme-dark *));
+
 @theme {
   /* Doctor Tracker palette — Plumlime-inspired professional 2.5D SaaS */
   --color-forest: #101b0b;

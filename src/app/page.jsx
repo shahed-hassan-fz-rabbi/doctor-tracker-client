@@ -67,7 +67,7 @@ function DashboardPreview() {
   return (
     <div className="relative mx-auto w-full max-w-[590px]">
       <div className="absolute -inset-5 rounded-[2.5rem] bg-lime/20 blur-2xl" aria-hidden="true" />
-      <div className="relative rounded-[1.7rem] border border-white/80 bg-white p-2 shadow-[0_28px_80px_rgba(16,27,11,0.16)] sm:rounded-[2rem] sm:p-3">
+      <div className="relative rounded-[1.7rem] border border-white/80 bg-white p-2 shadow-[0_28px_80px_rgba(16,27,11,0.16)] sm:rounded-[2rem] sm:p-3 dark:border-white/10 dark:bg-[#131f13]">
         <div className="overflow-hidden rounded-[1.25rem] bg-forest text-ivory sm:rounded-[1.5rem]">
           <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-5 sm:py-4">
             <div className="flex items-center gap-2.5">
@@ -149,11 +149,11 @@ function DashboardPreview() {
           </div>
         </div>
       </div>
-      <div className="absolute -bottom-4 -left-2 hidden items-center gap-2 rounded-xl border border-line bg-white px-4 py-3 shadow-card sm:flex">
+      <div className="absolute -bottom-4 -left-2 hidden items-center gap-2 rounded-xl border border-line bg-white px-4 py-3 shadow-card sm:flex dark:border-white/10 dark:bg-[#15221a]">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-lime/25 text-forest">
           <Check className="h-4 w-4" aria-hidden="true" />
         </span>
-        <span className="text-xs font-semibold text-ink">Designed for clear workflows</span>
+        <span className="text-xs font-semibold text-ink dark:text-[#dfe9dd]">Designed for clear workflows</span>
       </div>
     </div>
   );
@@ -161,7 +161,7 @@ function DashboardPreview() {
 
 export default function Home() {
   return (
-    <div className="min-h-screen overflow-x-clip bg-ivory text-ink">
+    <div className="min-h-screen overflow-x-clip bg-ivory text-ink dark:bg-[#0b120e] dark:text-[#e6efe4]">
       <PublicNavbar />
       <main>
         <section id="home" className="relative scroll-mt-24 overflow-hidden pb-16 pt-12 sm:pb-24 sm:pt-16 lg:pb-28 lg:pt-20">
@@ -169,42 +169,42 @@ export default function Home() {
           <div className="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-forest/5 blur-3xl" aria-hidden="true" />
           <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:px-10">
             <div className="max-w-2xl">
-              <p className="inline-flex items-center gap-2 rounded-full border border-forest/10 bg-white/70 px-3.5 py-2 text-[10px] font-bold tracking-[0.16em] text-forest sm:text-xs">
+              <p className="inline-flex items-center gap-2 rounded-full border border-forest/10 bg-white/70 px-3.5 py-2 text-[10px] font-bold tracking-[0.16em] text-forest sm:text-xs dark:border-lime/20 dark:bg-white/5 dark:text-lime-soft">
                 <span className="h-2 w-2 rounded-full bg-lime ring-4 ring-lime/20" aria-hidden="true" />
                 SMART HEALTHCARE MANAGEMENT PLATFORM
               </p>
-              <h1 className="mt-6 max-w-2xl font-display text-[2.65rem] font-extrabold leading-[1.08] tracking-tight text-forest sm:text-5xl lg:text-[3.7rem]">
-                Manage Your Healthcare Operations <span className="text-forest/55">with Confidence.</span>
+              <h1 className="mt-6 max-w-2xl font-display text-[2.65rem] font-extrabold leading-[1.08] tracking-tight text-forest sm:text-5xl lg:text-[3.7rem] dark:text-[#eaf2e6]">
+                Manage Your Healthcare Operations <span className="text-forest/55 dark:text-[#9db894]">with Confidence.</span>
               </h1>
-              <p className="mt-6 max-w-xl text-base leading-7 text-ink-soft sm:text-lg sm:leading-8">
+              <p className="mt-6 max-w-xl text-base leading-7 text-ink-soft sm:text-lg sm:leading-8 dark:text-[#a9bda9]">
                 Doctor Tracker helps healthcare administrators organize doctors, manage patient records, monitor operations, and access meaningful insights through one centralized platform.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/login" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-forest px-5 py-3 text-sm font-bold text-white shadow-card transition hover:-translate-y-0.5 hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2">
+                <Link href="/login" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-forest px-5 py-3 text-sm font-bold text-white shadow-card transition hover:-translate-y-0.5 hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 dark:bg-lime dark:text-forest dark:hover:bg-lime-soft">
                   Access Admin Dashboard <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
-                <a href="#features" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-line bg-white/70 px-5 py-3 text-sm font-bold text-forest transition hover:border-forest/20 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2">
+                <a href="#features" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-line bg-white/70 px-5 py-3 text-sm font-bold text-forest transition hover:border-forest/20 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 dark:border-white/15 dark:bg-white/5 dark:text-lime-soft dark:hover:bg-white/10">
                   Explore Features <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                 </a>
               </div>
-              <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-ink-soft">
-                <span className="inline-flex items-center gap-2"><LockKeyhole className="h-4 w-4 text-forest" aria-hidden="true" /> Protected admin access</span>
-                <span className="inline-flex items-center gap-2"><HeartPulse className="h-4 w-4 text-forest" aria-hidden="true" /> Built for healthcare operations</span>
+              <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-ink-soft dark:text-[#a9bda9]">
+                <span className="inline-flex items-center gap-2"><LockKeyhole className="h-4 w-4 text-forest dark:text-lime-soft" aria-hidden="true" /> Protected admin access</span>
+                <span className="inline-flex items-center gap-2"><HeartPulse className="h-4 w-4 text-forest dark:text-lime-soft" aria-hidden="true" /> Built for healthcare operations</span>
               </div>
             </div>
             <DashboardPreview />
           </div>
         </section>
 
-        <section id="about" className="scroll-mt-24 border-y border-line bg-white py-16 sm:py-20 lg:py-24">
+        <section id="about" className="scroll-mt-24 border-y border-line bg-white py-16 sm:py-20 lg:py-24 dark:border-white/10 dark:bg-[#101811]">
           <div className="mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:px-10">
             <div>
-              <p className="text-xs font-bold tracking-[0.16em] text-forest">ABOUT DOCTOR TRACKER</p>
-              <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">About Doctor Tracker</h2>
-              <p className="mt-4 font-display text-lg font-bold text-forest sm:text-xl">A more organized way to manage the work behind care.</p>
+              <p className="text-xs font-bold tracking-[0.16em] text-forest dark:text-lime-soft">ABOUT DOCTOR TRACKER</p>
+              <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl dark:text-[#e6efe4]">About Doctor Tracker</h2>
+              <p className="mt-4 font-display text-lg font-bold text-forest sm:text-xl dark:text-lime-soft">A more organized way to manage the work behind care.</p>
             </div>
             <div>
-              <p className="text-base leading-8 text-ink-soft sm:text-lg">
+              <p className="text-base leading-8 text-ink-soft sm:text-lg dark:text-[#a9bda9]">
                 Doctor Tracker is a centralized healthcare management platform designed to simplify administrative workflows. It provides a structured environment for managing doctor information, patient records, and operational insights.
               </p>
               <div className="mt-7 grid gap-4 sm:grid-cols-2">
@@ -213,7 +213,7 @@ export default function Home() {
                   'Organize doctor and patient information.',
                   'Improve administrative visibility.',
                   'Support informed operational decisions.',
-                ].map((text) => <p key={text} className="flex items-start gap-3 text-sm font-semibold leading-6 text-ink"><span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lime/40 text-forest"><Check className="h-3 w-3" aria-hidden="true" /></span>{text}</p>)}
+                ].map((text) => <p key={text} className="flex items-start gap-3 text-sm font-semibold leading-6 text-ink dark:text-[#dfe9dd]"><span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lime/40 text-forest"><Check className="h-3 w-3" aria-hidden="true" /></span>{text}</p>)}
               </div>
             </div>
           </div>
@@ -222,16 +222,16 @@ export default function Home() {
         <section id="features" className="scroll-mt-24 py-16 sm:py-20 lg:py-24">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-bold tracking-[0.16em] text-forest">A CONNECTED WORKSPACE</p>
-              <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Tools for confident administration</h2>
-              <p className="mt-4 text-base leading-7 text-ink-soft">Keep everyday management tasks organized in a secure, straightforward interface.</p>
+              <p className="text-xs font-bold tracking-[0.16em] text-forest dark:text-lime-soft">A CONNECTED WORKSPACE</p>
+              <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl dark:text-[#e6efe4]">Tools for confident administration</h2>
+              <p className="mt-4 text-base leading-7 text-ink-soft dark:text-[#a9bda9]">Keep everyday management tasks organized in a secure, straightforward interface.</p>
             </div>
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3 lg:gap-5">
               {features.map(({ icon: Icon, title, description }) => (
-                <article key={title} className="group rounded-2xl border border-line bg-white p-6 shadow-soft transition duration-200 hover:-translate-y-1 hover:shadow-card sm:p-7">
+                <article key={title} className="group rounded-2xl border border-line bg-white p-6 shadow-soft transition duration-200 hover:-translate-y-1 hover:shadow-card sm:p-7 dark:border-white/10 dark:bg-white/[0.04]">
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-lime/30 text-forest transition group-hover:bg-lime"><Icon className="h-5 w-5" aria-hidden="true" /></span>
-                  <h3 className="mt-5 font-display text-lg font-bold text-ink">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-ink-soft">{description}</p>
+                  <h3 className="mt-5 font-display text-lg font-bold text-ink dark:text-[#e6efe4]">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-ink-soft dark:text-[#a9bda9]">{description}</p>
                 </article>
               ))}
             </div>
@@ -260,19 +260,19 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-white py-16 sm:py-20 lg:py-24" aria-labelledby="why-title">
+        <section className="bg-white py-16 sm:py-20 lg:py-24 dark:bg-[#101811]" aria-labelledby="why-title">
           <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:px-10">
-            <div className="rounded-[2rem] border border-line bg-ivory p-7 sm:p-10">
+            <div className="rounded-[2rem] border border-line bg-ivory p-7 sm:p-10 dark:border-white/10 dark:bg-white/[0.04]">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-forest text-lime"><HeartPulse className="h-7 w-7" aria-hidden="true" /></div>
-              <p className="mt-7 font-display text-2xl font-bold leading-snug text-forest sm:text-3xl">Bring essential administrative workflows into clearer focus.</p>
-              <p className="mt-4 text-sm leading-7 text-ink-soft">A calm, structured workspace helps teams find the information they need and stay oriented as work moves forward.</p>
+              <p className="mt-7 font-display text-2xl font-bold leading-snug text-forest sm:text-3xl dark:text-lime-soft">Bring essential administrative workflows into clearer focus.</p>
+              <p className="mt-4 text-sm leading-7 text-ink-soft dark:text-[#a9bda9]">A calm, structured workspace helps teams find the information they need and stay oriented as work moves forward.</p>
             </div>
             <div>
-              <p className="text-xs font-bold tracking-[0.16em] text-forest">WHY DOCTOR TRACKER</p>
-              <h2 id="why-title" className="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Designed around administrative clarity.</h2>
-              <p className="mt-4 text-base leading-7 text-ink-soft">Doctor Tracker brings the core management experience together without exposing sensitive records publicly.</p>
+              <p className="text-xs font-bold tracking-[0.16em] text-forest dark:text-lime-soft">WHY DOCTOR TRACKER</p>
+              <h2 id="why-title" className="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl dark:text-[#e6efe4]">Designed around administrative clarity.</h2>
+              <p className="mt-4 text-base leading-7 text-ink-soft dark:text-[#a9bda9]">Doctor Tracker brings the core management experience together without exposing sensitive records publicly.</p>
               <ul className="mt-7 grid gap-3 sm:grid-cols-2">
-                {benefits.map((benefit) => <li key={benefit} className="flex items-center gap-3 text-sm font-semibold text-ink"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-lime/35 text-forest"><Check className="h-3.5 w-3.5" aria-hidden="true" /></span>{benefit}</li>)}
+                {benefits.map((benefit) => <li key={benefit} className="flex items-center gap-3 text-sm font-semibold text-ink dark:text-[#dfe9dd]"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-lime/35 text-forest"><Check className="h-3.5 w-3.5" aria-hidden="true" /></span>{benefit}</li>)}
               </ul>
             </div>
           </div>
@@ -291,14 +291,14 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="contact" className="scroll-mt-24 border-t border-line bg-white py-14 sm:py-16">
+        <section id="contact" className="scroll-mt-24 border-t border-line bg-white py-14 sm:py-16 dark:border-white/10 dark:bg-[#101811]">
           <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-10">
             <div className="max-w-2xl">
-              <p className="text-xs font-bold tracking-[0.16em] text-forest">CONTACT</p>
-              <h2 className="mt-3 font-display text-2xl font-extrabold text-ink">Questions about Doctor Tracker?</h2>
-              <p className="mt-2 text-sm leading-6 text-ink-soft">For product enquiries or access help, contact the platform administrator through your organization&apos;s established support channel.</p>
+              <p className="text-xs font-bold tracking-[0.16em] text-forest dark:text-lime-soft">CONTACT</p>
+              <h2 className="mt-3 font-display text-2xl font-extrabold text-ink dark:text-[#e6efe4]">Questions about Doctor Tracker?</h2>
+              <p className="mt-2 text-sm leading-6 text-ink-soft dark:text-[#a9bda9]">For product enquiries or access help, contact the platform administrator through your organization&apos;s established support channel.</p>
             </div>
-            <Link href="/login" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 self-start rounded-xl border border-line px-4 py-2.5 text-sm font-bold text-forest transition hover:border-forest/20 hover:bg-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 md:self-center">
+            <Link href="/login" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 self-start rounded-xl border border-line px-4 py-2.5 text-sm font-bold text-forest transition hover:border-forest/20 hover:bg-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 md:self-center dark:border-white/15 dark:text-lime-soft dark:hover:bg-white/5">
               Admin Login <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
