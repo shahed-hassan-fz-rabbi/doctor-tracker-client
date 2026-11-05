@@ -27,6 +27,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import { ConfirmDialog, useToast } from '@/components/ui/Toast';
 import Modal from '@/components/ui/Modal';
 import { formatDate, initials } from '@/lib/utils';
+import { IS_DEMO } from '@/lib/api';
 
 /**
  * Doctor details: profile card + the doctor's paginated patient roster.
@@ -104,7 +105,7 @@ export default function DoctorDetailsPage({ params }) {
               </div>
               <p className="mt-1 text-sm text-lime-soft">{doctor.specialization} · {doctor.hospital}</p>
             </div>
-            <div className="flex gap-2">
+            {!IS_DEMO && <div className="flex gap-2">
               <Button
                 variant="dark"
                 size="md"
@@ -131,7 +132,7 @@ export default function DoctorDetailsPage({ params }) {
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
-            </div>
+            </div>}
           </div>
 
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -152,10 +153,10 @@ export default function DoctorDetailsPage({ params }) {
               {rosterMeta ? `${rosterMeta.total} patient${rosterMeta.total === 1 ? '' : 's'} under this doctor` : '…'}
             </p>
           </div>
-          <Button size="sm" variant="subtle" onClick={() => setAddOpen(true)}>
+          {!IS_DEMO && <Button size="sm" variant="subtle" onClick={() => setAddOpen(true)}>
             <Plus className="h-4 w-4" />
             Add
-          </Button>
+          </Button>}
         </div>
 
         {patientsQuery.isLoading ? (
@@ -165,11 +166,11 @@ export default function DoctorDetailsPage({ params }) {
             icon={Users}
             title="No patients yet"
             description="Patients added here will show in this doctor's roster."
-            action={
+            action={!IS_DEMO && (
               <Button onClick={() => setAddOpen(true)}>
                 <Plus className="h-4 w-4" /> Add first patient
               </Button>
-            }
+            )}
           />
         ) : (
           <>
@@ -181,7 +182,7 @@ export default function DoctorDetailsPage({ params }) {
                 { key: 'condition', label: 'Condition' },
                 { key: 'phone', label: 'Phone' },
                 { key: 'created', label: 'Registered' },
-                { key: 'actions', label: '' },
+                ...(!IS_DEMO ? [{ key: 'actions', label: '' }] : []),
               ]}
             >
               {roster.map((p, i) => (
@@ -203,7 +204,7 @@ export default function DoctorDetailsPage({ params }) {
                     </td>
                     <td className="pr-4 text-sm text-ink-soft">{p.phone}</td>
                     <td className="pr-4 text-sm text-ink-soft">{formatDate(p.createdAt)}</td>
-                    <td className="pr-4">
+                    {!IS_DEMO && <td className="pr-4">
                       <div className="flex justify-end">
                         <button
                           onClick={() => setRemoving(p)}
@@ -213,7 +214,7 @@ export default function DoctorDetailsPage({ params }) {
                           <UserMinus className="h-3.5 w-3.5" /> Remove
                         </button>
                       </div>
-                    </td>
+                    </td>}
                   </motion.tr>
               ))}
             </Table>
@@ -233,7 +234,7 @@ export default function DoctorDetailsPage({ params }) {
                     <p className="truncate text-sm font-semibold text-ink">{p.fullName}</p>
                     <p className="text-xs text-ink-soft">{p.condition} · {p.age} yrs</p>
                   </div>
-                  <button
+                  {!IS_DEMO && <button
                     onClick={(e) => {
                       e.preventDefault();
                       setRemoving(p);
@@ -242,7 +243,7 @@ export default function DoctorDetailsPage({ params }) {
                     aria-label={`Remove ${p.fullName}`}
                   >
                     <UserMinus className="h-4 w-4" />
-                  </button>
+                  </button>}
                 </Link>
               ))}
             </div>
@@ -257,7 +258,7 @@ export default function DoctorDetailsPage({ params }) {
       </Card>
 
       {/* Modals & dialogs */}
-      <ConfirmDialog
+      {!IS_DEMO && <ConfirmDialog
         open={confirmDelete}
         title={`Delete ${doctor.name}?`}
         description="The doctor record will be removed. Patients stay in the system but become unassigned."
@@ -265,18 +266,18 @@ export default function DoctorDetailsPage({ params }) {
         loading={deleteDoctor.isPending}
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(false)}
-      />
+      />}
 
-      <Modal open={addOpen} onClose={() => setAddOpen(false)} title={`Add patient under ${doctor.name}`}>
+      {!IS_DEMO && <Modal open={addOpen} onClose={() => setAddOpen(false)} title={`Add patient under ${doctor.name}`}>
         <AddPatientInline
           doctor={{ id, name: doctor.name }}
           onDone={() => {
             setAddOpen(false);
           }}
         />
-      </Modal>
+      </Modal>}
 
-      <ConfirmDialog
+      {!IS_DEMO && <ConfirmDialog
         open={Boolean(removing)}
         title={`Remove ${removing?.fullName || 'patient'} from roster?`}
         description="The patient record is kept, but will no longer be linked to this doctor. You can re-assign them from the patients page."
@@ -298,7 +299,7 @@ export default function DoctorDetailsPage({ params }) {
           }
         }}
         onCancel={() => setRemoving(null)}
-      />
+      />}
     </div>
   );
 }

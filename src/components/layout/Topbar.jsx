@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Menu, Search, Plus } from 'lucide-react';
 import { useMe } from '@/hooks/useAuth';
 import { usePathname, useRouter } from 'next/navigation';
+import { IS_DEMO } from '@/lib/api';
 
 /** Top bar of the protected area: mobile menu button + quick search. */
 export default function Topbar({ onMenuClick }) {
@@ -52,14 +53,14 @@ export default function Topbar({ onMenuClick }) {
         </form>
 
         <div className="ml-auto flex items-center gap-3">
-          <button
+          {!IS_DEMO && <button
             onClick={() => router.push(isPatientsPage ? '/patients/new' : '/doctors/new')}
             aria-label={isPatientsPage ? 'Add Patient' : 'Add Doctor'}
             className="hidden h-10 items-center gap-2 rounded-lg bg-lime px-4 text-sm font-semibold text-ink shadow-soft transition hover:bg-lime/90 sm:inline-flex cursor-pointer font-display"
           >
             <Plus className="h-4 w-4" />
             {isPatientsPage ? 'Add Patient' : 'Add Doctor'}
-          </button>
+          </button>}
           <div className="flex items-center gap-2 text-sm">
             <span className="hidden font-medium text-ink lg:inline font-display">{user?.name}</span>
           </div>

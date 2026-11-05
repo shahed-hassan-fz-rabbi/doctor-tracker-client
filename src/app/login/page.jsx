@@ -14,6 +14,7 @@ import Button from '@/components/ui/Button';
 import { safeNextPath } from '@/lib/navigation';
 import BrandMark from '@/components/ui/BrandMark';
 import { API_BASE, DEMO_AVAILABLE, DEMO_CREDENTIALS, IS_DEMO } from '@/lib/api';
+import { isDemoViewer } from '@/lib/demoAccess';
 
 const loginSchema = z.object({
   email: z.string().trim().min(1, 'Email is required').email('Enter a valid email'),
@@ -53,6 +54,10 @@ function LoginContent() {
   });
 
   async function onSubmit(values) {
+    if (IS_DEMO && !DEMO_AVAILABLE) {
+      toast.error('The public demo is not available yet.');
+      return;
+    }
     try {
       await login.mutateAsync(values);
       toast.success('Welcome back to Doctor Tracker.');
@@ -179,6 +184,7 @@ function LoginContent() {
             <Field label="Email" error={errors.email}>
               <Input
                 type="email"
+                disabled={IS_DEMO && !DEMO_AVAILABLE}
                 autoComplete="email"
                 placeholder={IS_DEMO ? 'demo@example.com' : 'admin@example.com'}
                 error={errors.email}
@@ -190,6 +196,7 @@ function LoginContent() {
               <div className="relative">
                 <Input
                   type={showPassword ? 'text' : 'password'}
+                  disabled={IS_DEMO && !DEMO_AVAILABLE}
                   autoComplete="current-password"
                   placeholder="••••••••••"
                   error={errors.password}
@@ -212,7 +219,7 @@ function LoginContent() {
               size="lg"
               className="w-full"
               loading={login.isPending}
-              disabled={googleLoading}
+              disabled={googleLoading || (IS_DEMO && !DEMO_AVAILABLE)}
             >
               {!login.isPending && <LogIn className="h-4 w-4" />}
               {login.isPending ? 'Signing in…' : 'Sign in'}
@@ -288,12 +295,8 @@ export default function LoginPage() {
   const { data, isSuccess } = useMe();
   useEffect(() => {
     if (isSuccess && data?.data?.user) {
-      // If viewer, go to restricted page
-      if (data.data.user.role !== 'admin') {
-        router.replace('/restricted');
-      } else {
-        router.replace('/dashboard');
-      }
+      const user = data.data.user;
+      router.replace(user.role === 'admin' || isDemoViewer(user, IS_DEMO) ? '/dashboard' : '/restricted');
     }
   }, [isSuccess, data, router]);
 

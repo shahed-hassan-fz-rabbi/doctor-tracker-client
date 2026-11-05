@@ -3,6 +3,7 @@ import { apiFetch } from './api';
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
   vi.useRealTimers();
 });
 
@@ -63,6 +64,7 @@ describe('apiFetch', () => {
 
   it('keeps demo credentials hidden until the separate demo is marked available', async () => {
     vi.stubEnv('NEXT_PUBLIC_APP_ENV', 'demo');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_API_URL', 'https://demo-api.example.test/api/v1');
     vi.stubEnv('NEXT_PUBLIC_DEMO_EMAIL', 'demo@example.test');
     vi.stubEnv('NEXT_PUBLIC_DEMO_PASSWORD', 'public-demo-password');
     vi.stubEnv('NEXT_PUBLIC_DEMO_AVAILABLE', 'false');
@@ -74,5 +76,18 @@ describe('apiFetch', () => {
     vi.resetModules();
     const available = await import('./api');
     expect(available.DEMO_CREDENTIALS).toEqual({ email: 'demo@example.test', password: 'public-demo-password' });
+  });
+
+  it('keeps demo credentials unavailable without a separate demo API URL', async () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_ENV', 'demo');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_EMAIL', 'demo@example.test');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_PASSWORD', 'public-demo-password');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_AVAILABLE', 'true');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_API_URL', '');
+    vi.resetModules();
+    const unavailable = await import('./api');
+    expect(unavailable.DEMO_AVAILABLE).toBe(false);
+    expect(unavailable.DEMO_CREDENTIALS).toBeNull();
+    expect(unavailable.API_BASE).toBe('');
   });
 });

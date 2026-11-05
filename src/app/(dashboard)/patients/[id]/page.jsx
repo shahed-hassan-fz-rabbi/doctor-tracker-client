@@ -12,6 +12,7 @@ import { TableSkeleton } from '@/components/ui/Table';
 import EmptyState from '@/components/ui/EmptyState';
 import { ConfirmDialog, useToast } from '@/components/ui/Toast';
 import { formatDate, initials } from '@/lib/utils';
+import { IS_DEMO } from '@/lib/api';
 
 /** Patient details: identity card, assigned doctor, notes and audit dates. */
 export default function PatientDetailsPage({ params }) {
@@ -74,7 +75,7 @@ export default function PatientDetailsPage({ params }) {
                 <Badge tone="gray">{patient.gender}</Badge>
               </div>
             </div>
-            <div className="flex gap-2">
+            {!IS_DEMO && <div className="flex gap-2">
               <Button
                 size="icon"
                 variant="outline"
@@ -93,7 +94,7 @@ export default function PatientDetailsPage({ params }) {
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
-            </div>
+            </div>}
           </div>
 
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -128,11 +129,11 @@ export default function PatientDetailsPage({ params }) {
               title="No doctor assigned"
               description="Assign one through the patient edit form."
               className="py-8"
-              action={
+              action={!IS_DEMO && (
                 <Button size="sm" onClick={() => router.push(`/patients/${id}/edit`)}>
                   Assign doctor
                 </Button>
-              }
+              )}
             />
           )}
         </Card>
@@ -151,7 +152,7 @@ export default function PatientDetailsPage({ params }) {
         </Card>
       </div>
 
-      <ConfirmDialog
+      {!IS_DEMO && <ConfirmDialog
         open={confirmDelete}
         title={`Delete ${patient.fullName}?`}
         description="This removes the patient record permanently. This action cannot be undone."
@@ -159,7 +160,7 @@ export default function PatientDetailsPage({ params }) {
         loading={deletePatient.isPending}
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(false)}
-      />
+      />}
     </div>
   );
 }

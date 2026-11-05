@@ -33,6 +33,8 @@ import { StatCard, Card, CardDark, PageHeader, Badge } from '@/components/ui/Car
 import EmptyState from '@/components/ui/EmptyState';
 import { TableSkeleton } from '@/components/ui/Table';
 import { compactNumber, formatDate, initials } from '@/lib/utils';
+import { IS_DEMO } from '@/lib/api';
+import { canAccessDashboard } from '@/lib/demoAccess';
 
 const CHART_COLORS = ['#C9F45A', '#3C9B58', '#E9A83B', '#D6E8A0', '#D95757', '#687064', '#2A3D1C', '#9CB358', '#E2C17A', '#7D8368'];
 const CHART_TOOLTIP = {
@@ -52,13 +54,15 @@ export default function DashboardPage() {
   const { data, isLoading, isError } = useAnalyticsOverview();
   const stats = data?.data;
   const user = authData?.data?.user;
+  const hasDashboardAccess = canAccessDashboard(user, IS_DEMO);
 
-  // Redirect viewers to restricted access page
+  // Production viewers remain restricted; only the isolated demo viewer can
+  // browse its own synthetic dashboard.
   useEffect(() => {
-    if (authSuccess && user?.role !== 'admin') {
+    if (authSuccess && !hasDashboardAccess) {
       router.replace('/restricted');
     }
-  }, [authSuccess, user?.role, router]);
+  }, [authSuccess, hasDashboardAccess, router]);
 
   // Show loading while checking auth
   if (!authSuccess) {
@@ -74,8 +78,8 @@ export default function DashboardPage() {
     );
   }
 
-  // If viewer, return null (redirecting)
-  if (user?.role !== 'admin') {
+  // If unauthorized, return null while redirecting.
+  if (!hasDashboardAccess) {
     return null;
   }
 

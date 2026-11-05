@@ -29,6 +29,7 @@ More views are available in [`docs/screenshots`](docs/screenshots), including th
 - Create, edit, view, and delete workflows, including doctor-patient assignments.
 - Dashboard metrics and analytics charts from the API.
 - Responsive navigation, forms, tables, and empty and error states.
+- An isolated demo frontend can show the same dashboard with synthetic, read-only data.
 
 ## Built with
 
@@ -82,3 +83,9 @@ Import `shahed-hassan-fz-rabbi/doctor-tracker-client` and deploy the `main` bran
 Set `NEXT_PUBLIC_API_URL` for Production to the Render API URL ending in `/api/v1`. The current production API base is `https://doctor-tracker-server-29dm.onrender.com/api/v1`. After Vercel gives you the frontend domain, add that exact origin to the backend’s `CORS_ORIGINS` setting. If you use Preview deployments, configure their API URL and allow only the exact preview origins. Keep both services on HTTPS so the session cookie can be sent securely.
 
 The actual Vercel domain is managed in Vercel; don’t copy an example hostname from this README as if it were your project’s domain.
+
+## Separate public demo
+
+The demo must use a separate Vercel project and a separate Render API backed only by the `doctor-tracker-demo` database. Build the demo project with `NEXT_PUBLIC_APP_ENV=demo`, `NEXT_PUBLIC_DEMO_API_URL` set to that demo API’s `/api/v1` base, and `NEXT_PUBLIC_DEMO_AVAILABLE=true` only after demo login has been verified. The public demo email and password are `NEXT_PUBLIC_*` values, so they are included in the browser bundle; never put production credentials or secrets in these variables. If the demo API URL, availability flag, or public credentials are missing, the login page shows **DEMO COMING SOON** and disables demo sign-in.
+
+The demo viewer can read synthetic doctors, patients, relationships, and analytics. The API independently rejects writes; hiding controls in the frontend is only a usability safeguard. See the server repository’s `docs/isolated-demo-environment.md` for Atlas and Render isolation requirements.

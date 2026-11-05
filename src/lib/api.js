@@ -4,15 +4,21 @@
  * knows its address, plus one small credentials-aware fetch wrapper.
  */
 export const IS_DEMO = process.env.NEXT_PUBLIC_APP_ENV === 'demo';
-// Only expose demo credentials after the isolated demo has passed end-to-end verification.
-export const DEMO_AVAILABLE = IS_DEMO && process.env.NEXT_PUBLIC_DEMO_AVAILABLE === 'true';
+const configuredDemoApiBase = process.env.NEXT_PUBLIC_DEMO_API_URL?.trim() || '';
+const configuredDemoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL?.trim() || '';
+const configuredDemoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD || '';
+// The separate demo deployment must explicitly opt in and provide its own API
+// and public demo credentials. Production is never used as a fallback.
+export const DEMO_AVAILABLE = IS_DEMO
+  && process.env.NEXT_PUBLIC_DEMO_AVAILABLE === 'true'
+  && Boolean(configuredDemoApiBase && configuredDemoEmail && configuredDemoPassword);
 const configuredApiBase = IS_DEMO
-  ? process.env.NEXT_PUBLIC_DEMO_API_URL
+  ? configuredDemoApiBase
   : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1');
 // A demo build fails closed instead of ever falling back to the production API.
 export const API_BASE = configuredApiBase || '';
 export const DEMO_CREDENTIALS = DEMO_AVAILABLE
-  ? { email: process.env.NEXT_PUBLIC_DEMO_EMAIL || '', password: process.env.NEXT_PUBLIC_DEMO_PASSWORD || '' }
+  ? { email: configuredDemoEmail, password: configuredDemoPassword }
   : null;
 const REQUEST_TIMEOUT_MS = 12000;
 

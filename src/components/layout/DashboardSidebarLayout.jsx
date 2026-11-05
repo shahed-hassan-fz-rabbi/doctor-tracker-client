@@ -21,7 +21,7 @@ export default function DashboardSidebarLayout({ children }) {
 
       <div className="md:pl-[260px]">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
-        {IS_DEMO && <div className="border-b border-lime/30 bg-forest px-4 py-2 text-center text-xs font-semibold tracking-wide text-lime-soft">DEMO ENVIRONMENT · Synthetic data · Read-only access</div>}
+        {IS_DEMO && <div role="status" className="border-b border-lime/30 bg-forest px-4 py-2 text-center text-xs font-semibold tracking-wide text-lime-soft">Demo Mode — You can explore all features, but changes are disabled.</div>}
         <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           {children}
         </main>
